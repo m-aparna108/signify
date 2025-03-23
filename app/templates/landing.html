@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block page_title %}
+    Home Page
+{% endblock %}
+
+    {% block main_content %}
+
+    <div class="home"> 
+
+        <div class="parallax home__parallax home__parallax-img1" data-rellax-speed="-9"></div> 
+
+        <div class="parallax home__parallax home__parallax-img2" data-rellax-speed="-7"></div> 
+
+        <div class="parallax home__parallax home__parallax-img3" data-rellax-speed="-6"></div> 
+
+        <div class="parallax home__parallax home__parallax-img4" data-rellax-speed="-3"></div> 
+
+
+
+        <h1 class="parallax home__title" data-rellax-speed="-6">Signify</h1> 
+
+        <span class="parallax home__subtitle" data-rellax-speed="-5">Interactive Sign learning platform.</span>  
+
+        <button class="parallax home__actionBtn" data-rellax-speed="-4"></button> 
+
+        <!--div class="home__scroll"> 
+
+           <a href="#section"><i class='bx bx-mouse'></i></a> 
+
+        </div--> 
+
+    </div> 
+
+
+
+    <!-- ===== SECTION =====--> 
+
+    <section class="l-section" id="section"> 
+
+        <div class="section"> 
+
+            <div class="section__data"> 
+
+                <h2 class="section__title">About us</h2> 
+
+                <p class="section__text">"Imagine a world where communication has no barriers. Signify is our step toward making that world a reality."
+
+                    Signify is an AI-driven sign language learning platform. We created this platform to make sign language learning more engaging, interactive, and accessible for everyone—whether you're a beginner, an educator, or part of the deaf community.</p> 
+
+            </div> 
+
+ 
+
+            <img src="{{ url_for('static', filename='/bgi/imgm.jpg') }}" alt="" class="section__img"> 
+
+        </div> 
+
+    </section> 
+
+    <section class="section-two" id="section"> 
+
+        <div class="section"> 
+
+            <img src="{{ url_for('static', filename='/bgi/imgm.jpg') }}" alt="" class="section__img"> 
+
+            <div class="section__data"> 
+
+                <h2 class="section__title">Why us</h2> 
+
+                <p class="section__text">Our Mission
+                    To empower individuals with the ability to learn and communicate using sign language effortlessly, breaking down communication barriers worldwide.</p> 
+
+            </div>           
+
+        </div> 
+
+    </section> 
+
+     
+
+</main> 
+
+
+
+<!-- RELLAX JS --> 
+
+<script defer src="{{ url_for('static', filename='rellax.min.js') }}"></script>
+
+
+<!-- GSAP --> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js"></script> 
+
+
+
+<!-- SCROLL REVEAL --> 
+
+<script src="https://unpkg.com/scrollreveal"></script> 
+
+
+
+<!-- MAIN JS --> 
+
+
+<script defer src="{{ url_for('static', filename='main.js') }}"></script>
+    {% endblock %}
+
+ 

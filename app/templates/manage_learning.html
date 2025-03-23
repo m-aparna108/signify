@@ -1,0 +1,118 @@
+{% extends "admin_dashboard.html" %}
+
+{% block content %}
+<h2>Manage Learning Content</h2>
+<!-- Back to Dashboard Button -->
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-back">← Back to Dashboard</a>
+
+<!-- Add Sign Form -->
+<form id="addSignForm" enctype="multipart/form-data">
+    <label>Category:</label>
+    <select name="category">
+        <option value="Alphabet">Alphabet</option>
+        <option value="Numbers">Numbers</option>
+        <option value="Common Words">Common Words</option>
+    </select>
+
+    <label>Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Image:</label>
+    <input type="file" name="image" accept="image/*" required>
+
+    <label>Description:</label>
+    <textarea name="description" required></textarea>
+
+    <button type="submit">Add Sign</button>
+</form>
+
+<!-- Search & Filter -->
+<input type="text" id="searchInput" placeholder="Search by name">
+<select id="categoryFilter">
+    <option value="">All Categories</option>
+    <option value="Alphabet">Alphabet</option>
+    <option value="Numbers">Numbers</option>
+    <option value="Common Words">Common Words</option>
+</select>
+
+<!-- Sign Content Table -->
+<table>
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="signTableBody">
+        <!-- Data will be dynamically added here -->
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div>
+    <button id="prevPage">Previous</button>
+    <span id="pageNumber">1</span>
+    <button id="nextPage">Next</button>
+</div>
+
+<!-- Edit Sign Modal -->
+<div id="editSignModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Sign</h2>
+        <form id="editSignForm">
+            <input type="hidden" id="editSignId">
+            
+            <label for="editSignName">Name:</label>
+            <input type="text" id="editSignName" required>
+            
+            <label for="editSignDescription">Description:</label>
+            <textarea id="editSignDescription" required></textarea>
+            
+            <label>Current Image:</label>
+            <img id="currentSignImage" src="" width="100">
+            
+            <label for="editSignImage">Change Image:</label>
+            <input type="file" id="editSignImage">
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Edit/Delete Popups 
+<div id="editSignModal" style="display: none;">
+    <h3>Edit Sign</h3>
+    <form id="editSignForm">
+        <input type="hidden" id="editSignId">
+        <label>Name:</label>
+        <input type="text" id="editName">
+        <label>Description:</label>
+        <textarea id="editDescription"></textarea>
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+
+<div id="deleteSignModal" style="display: none;">
+    <p>Are you sure you want to delete this sign?</p>
+    
+    <button id="confirmDelete">Yes</button>
+    
+    <button id="cancelDelete">No</button>
+</div>-->
+
+<script src="{{ url_for('static', filename='manage_learning.js') }}"></script>
+{% endblock %}

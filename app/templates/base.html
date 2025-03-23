@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>
+            {% block page_title %}
+            {% endblock %}
+        </title> 
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/newstyle.css') }}">
+        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'> 
+    </head> 
+<body>
+
+    
+    {% block navigation %}
+    <header class="l-header"> 
+
+        <nav class="nav bd-grid"> 
+
+            <a href="#" class="nav__logo">Signify</a> 
+
+
+
+            <div class="nav__toggle" id="nav-toggle"> 
+
+                <i class='bx bx-menu-alt-right'></i> 
+
+            </div> 
+
+
+
+            <div class="nav__menu" id="nav-menu"> 
+
+                <ul class="nav__list"> 
+
+                    <li class="nav__item"><a href="{{ url_for('home') }}" class="nav__link">Home</a></li> 
+
+                    <li class="nav__item"><a href="about.html" class="nav__link">About</a></li> 
+
+                    
+
+                    <li class="nav__item"><a href="{{ url_for('login') }}" class="nav__link">Login</a></li> 
+
+                </ul> 
+
+            </div> 
+
+        </nav>  
+
+    </header> 
+        
+    {% endblock %}
+
+    
+    {% block main_content %}
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+<div class="admin-dashboard">
+    <div class="dashboard-container">
+        <h2>Welcome, {{ username }}! </h2>
+        <p>Welcome, Admin! Manage content here.</p>
+
+        <div class="admin-links">
+            <a href="{{ url_for('manage_learning') }}" class="btn btn-primary">Manage Learning Content</a>
+           
+        </div>
+    </div>
+</div>
+{% endblock %}
+

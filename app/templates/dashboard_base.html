@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_learning.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/learning_module.css') }}">
+    <script defer src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">Signify</div>
+        <div class="nav-right">
+            <!-- Profile Picture -->
+            <div class="profile-container">
+                <img src="{{ url_for('static', filename='/bgi/profile.jpg') }}" class="profile-pic" id="profileIcon">
+                <div class="profile-card" id="profileCard">
+                    <p><strong>{{ session['username'] }}</strong></p>
+                    <p>{{ session['email'] }}</p>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Logout Confirmation Card -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-card">
+            <p>Are you sure you want to logout?</p>
+            <!--<button class="btn-confirm" onclick="window.location.href='{{ url_for('logout') }}'">Yes</button>-->
+            <button class="btn-confirm" id="confirmLogout">Yes</button>
+            <button class="btn-cancel" id="cancelLogout">Cancel</button>
+        </div>
+    </div>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

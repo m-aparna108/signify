@@ -1,0 +1,24 @@
+{% extends "user_dashboard.html" %}
+
+{% block content %}
+<h2>Learn Sign Language</h2>
+<!-- Back to Dashboard Button -->
+<a href="{{ url_for('user_dashboard') }}" class="btn-back">← Back to Dashboard</a>
+<!-- Search Input -->
+<input type="text" id="searchInput" placeholder="Search..." onkeyup="filterCards()">
+
+<!-- Sign Language Cards -->
+<div class="signs-container">
+    {% for sign in signs %}
+    <div class="sign-card">
+        <img src="{{ sign.image }}" alt="{{ sign.name }}">
+        <div class="sign-info">
+            <h3>{{ sign.name }}</h3>
+            <p>{{ sign.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+

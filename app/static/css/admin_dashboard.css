@@ -1,0 +1,146 @@
+/* === Admin Dashboard Styling === */
+.admin-dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    top: -90px; /* Moves card further up */
+   
+}
+
+/* Dashboard Heading */
+.dashboard-container h2 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+/* Dashboard Text */
+.dashboard-container p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+/* Admin Links */
+.admin-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+    width: 80%;
+    text-align: center;
+}
+
+/* Primary Button */
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+/* Secondary Button */
+.btn-secondary {
+    background: #28a745;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #218838;
+}
+
+/* Tertiary Button */
+.btn-tertiary {
+    background: #ffc107;
+    color: black;
+}
+
+.btn-tertiary:hover {
+    background: #e0a800;
+}
+
+/* === Logout Confirmation Modal === */
+.logout-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
+}
+
+.logout-card {
+    background: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 300px;
+}
+
+.logout-card p {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.btn-confirm {
+    background: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.btn-confirm:hover {
+    background: #218838;
+}
+
+.btn-cancel {
+    background: gray;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a5a5a;
+}

@@ -1,0 +1,168 @@
+/* === Manage Learning Page Styling === */
+.manage-learning-container {
+    max-width: 500px; /* Reduced width */
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+/* Page Title */
+.manage-learning-container h2 {
+    color: #0056b3;
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* === Back to Dashboard Button === */
+.btn-back {
+    display: inline-block;
+    background: #6c757d;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.btn-back:hover {
+    background: #5a6268;
+}
+
+/* === Form Styling === */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: 600;
+    color: #333;
+    width: 70%;
+    text-align: left;
+}
+
+/* Input Fields */
+input, select, textarea {
+    width: 60%; /* Reduced width */
+    padding: 6px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+/* Reduce height of textarea */
+textarea {
+    resize: none;
+    height: 50px;
+}
+
+/* === Buttons === */
+button {
+    width: 45%; /* Reduced width */
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.1s;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Small Buttons */
+.btn-small {
+    background: #17a2b8;
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.btn-small:hover {
+    background: #138496;
+}
+
+/* === Table Styling === */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 6px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #007bff;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+td img {
+    max-width: 40px;
+    border-radius: 4px;
+}
+
+/* === Pagination Buttons - Smaller & Aligned === */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+#prevPage, #nextPage {
+    background: #28a745;
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+#prevPage:hover, #nextPage:hover {
+    background: #218838;
+}
+
+/* === Modal Styling === */
+.modal-content {
+    width: 300px; /* Compact modal */
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    font-size: 16px;
+    cursor: pointer;
+    color: red;
+}
+
+.close:hover {
+    color: darkred;
+}

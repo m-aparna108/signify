@@ -1,0 +1,15 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+<div class="user-dashboard">
+    <div class="dashboard-container">
+        <h2>Welcome, {{ username }}!</h2>
+        <p>Start learning sign language today.</p>
+
+        <div class="user-links">
+            <a href="{{ url_for('learning_module') }}" class="btn btn-primary">Learn Sign Language</a>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

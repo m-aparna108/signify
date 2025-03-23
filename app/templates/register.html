@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrapper">
+<div class="register-container">
+    <h2 class="register-title">Register</h2>
+    <form method="POST" class="register-form">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-input") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-input") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-input", id="password") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.confirm_password.label(class="form-label") }}
+            {{ form.confirm_password(class="form-input", id="confirmPassword") }}
+            <small id="passwordError" style="color: red; display: none;">Passwords do not match!</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class="btn", id="registerBtn", disabled=True) }}
+        </div>
+    </form>
+
+    <p class="login-text">
+        Already have an account? <a href="{{ url_for('login') }}" class="login-link">Login here</a>
+    </p>
+</div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const password = document.getElementById("password");
+        const confirmPassword = document.getElementById("confirmPassword");
+        const registerBtn = document.getElementById("registerBtn");
+        const passwordError = document.getElementById("passwordError");
+    
+        function validatePasswords() {
+            if (password.value.trim() === "" || confirmPassword.value.trim() === "") {
+                passwordError.style.display = "none";
+                registerBtn.disabled = true;
+                return;
+            }
+    
+            if (password.value !== confirmPassword.value) {
+                passwordError.style.display = "block";
+                registerBtn.disabled = true;
+            } else {
+                passwordError.style.display = "none";
+                registerBtn.disabled = false;
+            }
+        }
+    
+        password.addEventListener("input", validatePasswords);
+        confirmPassword.addEventListener("input", validatePasswords);
+    });
+    </script>
+  
+{% endblock %}
