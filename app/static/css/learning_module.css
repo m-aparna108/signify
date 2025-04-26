@@ -1,45 +1,113 @@
-/* Styling for the container holding the cards */
+.learn-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #f1f5f9;
+    padding-bottom: 40px;
+    position: relative;
+    margin-top: 0;  /* Removes any top margin */
+    padding-top: 0; /* Removes any top padding */
+}
+
+/* Page Title */
+h2 {
+    color: #7df9ff;
+    font-size: 2rem;
+    text-align: center;
+    padding: 30px;
+    text-shadow: 0 0 8px #00ffffa1;
+    margin-top: 0; 
+}
+
+/* Back Button */
+.btn-back {
+    display: inline-block;
+    margin: 20px 20px;
+    margin-left: auto; /* changed from 20px to auto to push it right */
+    padding: 10px 20px;
+    color: #00ffff;
+    background-color: transparent;
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: block; /* this makes margin-left: auto work properly */
+    width: fit-content;
+}
+.btn-back:hover {
+    background-color: #00ffff1a;
+    color: #e0e0e0;
+}
+
+/* Search Input */
+#searchinput {
+    display: block;
+    margin: 80px auto 30px auto;  /* top: 60px, bottom: 30px, left/right: auto to center */
+    width: 300px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #00ffff;
+    border-radius: 8px;
+    background-color: #0f172a;
+    color: #e0f7fa;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+#searchinput:focus {
+    border-color: #00ffff;
+}
+
+#searchinput::placeholder {
+    color: #9ca3af;
+}
+
+/* Container for all sign cards */
 .signs-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
     justify-content: center;
-    padding: 20px;
+    gap: 30px;
+    padding: 40px 20px;
+    /*background: linear-gradient(145deg, #111827, #0f0c29);
+    border-top: 1px solid #4b5563;*/
 }
 
-/* Styling for each card */
+/* Individual sign card */
 .sign-card {
-    width: 250px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e2f;
+    border: 1px solid #4b5563;
+    border-radius: 16px;
+    width: 260px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
     text-align: center;
-    transition: transform 0.3s ease;
 }
-
-/* Hover effect */
 .sign-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
+    box-shadow: 0 0 15px #7df9ff70;
 }
 
-/* Image styling */
+/* Sign Image */
 .sign-card img {
     width: 100%;
     height: 180px;
     object-fit: cover;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 1px solid #4b5563;
 }
 
-/* Name styling */
+/* Sign Info */
+.sign-info {
+    padding: 15px;
+}
 .sign-info h3 {
-    font-size: 18px;
-    margin: 10px 0;
+    color: #7df9ff;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+    text-shadow: 0 0 6px #00ffff70;
 }
-
-/* Description styling */
 .sign-info p {
-    font-size: 14px;
-    color: #555;
-    padding: 0 10px 10px;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    line-height: 1.4;
 }

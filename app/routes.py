@@ -130,7 +130,7 @@ def edit_sign(sign_id):
     return jsonify({"message": "Sign updated successfully"})
 
 """
-UPLOAD_FOLDER = "static/sign_images/"  # Store images in this folder
+UPLOAD_FOLDER = os.path.join("app","static", "sign_images")  # relative path
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 @app.route("/update_sign/<sign_id>", methods=["PUT"])
 def update_sign(sign_id):
@@ -151,14 +151,17 @@ def update_sign(sign_id):
         # Check if a new image is uploaded
         if "image" in request.files:
             image = request.files["image"]
+            print(" Got image from form:", image.filename)
             if image.filename and "." in image.filename:
                 ext = image.filename.rsplit(".", 1)[1].lower()
                 if ext in ALLOWED_EXTENSIONS:
                     #image_filename = f"{sign_id}.{ext}"  # Save with sign ID
                     image_filename = f"{name.replace(' ', '_')}.{ext}"  # Use sign name
                     image_path = os.path.join(UPLOAD_FOLDER, image_filename)
+                    print(f"Saving image to: {image_path}")
                     image.save(image_path)
-                    update_data["image"] = image_path  # Update MongoDB
+                    print(" Image saved!")
+                    update_data["image"] = f"/static/sign_images/{image_filename}"  # Update MongoDB
 
         # Update sign details in MongoDB
         mongo.db.signs.update_one({"_id": ObjectId(sign_id)}, {"$set": update_data})
@@ -244,6 +247,22 @@ def learning_module():
 
 
 
+#-------------------------------practice module-----------------
+
+@app.route('/practice')
+def practice():
+    return render_template('practice.html')
+
+from flask import Response, jsonify
+from ml_model.video_stream import generate_frames, get_latest_prediction
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/get_prediction')
+def get_prediction():
+    return jsonify({'prediction': get_latest_prediction()})
 
 
 from app import routes

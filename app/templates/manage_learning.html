@@ -1,6 +1,7 @@
 {% extends "admin_dashboard.html" %}
 
 {% block content %}
+<div class="learn-page">
 <h2>Manage Learning Content</h2>
 <!-- Back to Dashboard Button -->
     <a href="{{ url_for('admin_dashboard') }}" class="btn-back">← Back to Dashboard</a>
@@ -36,7 +37,7 @@
 </select>
 
 <!-- Sign Content Table -->
-<table>
+<table class="t">
     <thead>
         <tr>
             <th>Image</th>
@@ -52,7 +53,7 @@
 </table>
 
 <!-- Pagination -->
-<div>
+<div class="pag">
     <button id="prevPage">Previous</button>
     <span id="pageNumber">1</span>
     <button id="nextPage">Next</button>
@@ -63,7 +64,7 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Edit Sign</h2>
-        <form id="editSignForm">
+        <form id="editSignForm" enctype="multipart/form-data">
             <input type="hidden" id="editSignId">
             
             <label for="editSignName">Name:</label>
@@ -76,14 +77,13 @@
             <img id="currentSignImage" src="" width="100">
             
             <label for="editSignImage">Change Image:</label>
-            <input type="file" id="editSignImage">
+            <input type="file" id="editSignImage" name="image">
             
             <button type="submit">Save Changes</button>
         </form>
     </div>
 </div>
-
-
+</div>
 
 
 

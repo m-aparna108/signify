@@ -1,49 +1,82 @@
-/* === Admin Dashboard Styling === */
+
+
 .admin-dashboard {
+    
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* richer & bluish */
+    padding: 3rem 2rem;
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 2rem;
+    color: #7df9ff;
+    text-shadow: 0 0 5px #00ffff88;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dashboard-header p {
+    color: #c0c0c0;
+    font-size: 1rem;
+  }
+  
+  .dashboard-cards {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    
-}
-
-/* Dashboard Container */
-.dashboard-container {
+    gap: 2rem;
+    flex-wrap: nowrap;
+  }
+  
+  .dashboard-cards .card {
+    background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+    border: 1px solid #4b5563;
+    border-radius: 1rem;
+    width: 180px;
+    height: 240px;
+    padding: 2rem 1rem;
     text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    top: -90px; /* Moves card further up */
-   
-}
-
-/* Dashboard Heading */
-.dashboard-container h2 {
-    color: #333;
-    font-size: 28px;
-    margin-bottom: 15px;
-}
-
-/* Dashboard Text */
-.dashboard-container p {
-    font-size: 16px;
-    color: #555;
-    margin-bottom: 25px;
-}
-
-/* Admin Links */
-.admin-links {
+    text-decoration: none;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px #00ffff44;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
-    gap: 15px;
     align-items: center;
-}
-
+    justify-content: center;
+  }
+  
+  .dashboard-cards .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 15px #00ffffaa;
+    background: #111827;
+    border-color: #00ffff;
+    box-shadow: 0 0 20px #00ffff88;
+  }
+  
+  .card-icon i {
+    font-size: 2.8rem;
+    color: #7df9ff;
+    margin-bottom: 1rem;
+  }
+  
+  .card-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+  }
+  
+  .card-content p {
+    font-size: 0.9rem;
+    color: #c0c0c0;
+  }
+  
+/*----------------------------------------------------------------------------*/
 /* Button Styling */
 .btn {
     display: inline-block;

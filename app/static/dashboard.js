@@ -28,7 +28,7 @@ document.getElementById("confirmLogout").addEventListener("click", function () {
 
 /*search learning module------------------------*/
 function filterCards() {
-    let input = document.getElementById("searchInput").value.toLowerCase();
+    let input = document.getElementById("searchinput").value.toLowerCase();
     let cards = document.querySelectorAll(".sign-card");
 
     cards.forEach(card => {

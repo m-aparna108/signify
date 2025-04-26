@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Practice Sign Detection</title>
+    <style>
+        /* Body Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #00ffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Page Title */
+h1 {
+    font-size: 2.2rem;
+    text-shadow: 0 0 12px #00ffff, 0 0 24px #00ffff;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+/* Video Container */
+#video-container {
+    padding: 8px;
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+    box-shadow: 0 0 18px #00ffff80;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+    max-width: 800px;
+    height: 350px;
+}
+
+/* Video Element */
+#videoElement {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: #000;
+    object-fit: cover;
+}
+
+/* Prediction Container */
+#prediction-container {
+    text-align: center;
+    font-size: 1.3rem;
+    margin: 14px 0;
+    text-shadow: 0 0 8px #00ffffb0;
+}
+
+#prediction {
+    font-weight: bold;
+    color: #7df9ff;
+    margin-left: 6px;
+}
+
+/* Buttons Wrapper */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.35);
+}
+
+/* Start Button */
+.btn-start {
+    background-color: #00ffff;
+    color: #111;
+}
+
+.btn-start:hover {
+    background-color: #7df9ff;
+    box-shadow: 0 0 14px #7df9ff;
+}
+
+/* Stop Button */
+.btn-stop {
+    background-color: #ff0059;
+    color: #fff;
+}
+
+.btn-stop:hover {
+    background-color: #ff4b88;
+    box-shadow: 0 0 14px #ff4b88;
+}
+
+/* Back Button */
+.btn-back {
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00ffff40;
+}
+
+.btn-back:hover {
+    background-color: #00ffff;
+    color: #111;
+    box-shadow: 0 0 16px #00ffff;
+}
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Practice Hand Sign Detection</h1>
+
+    <div id="video-container">
+        <img id="videoElement" src="" alt="Webcam Feed">
+    </div>
+
+    <div id="prediction-container">Detected Sign: <span id="prediction">-</span></div>
+
+    <div  class="button-group">
+        <button class="btn btn-start" onclick="startVideo()">Start</button>
+        <button class="btn btn-stop" onclick="stopVideo()">Stop</button>
+    </div>
+
+    <a href="{{ url_for('user_dashboard') }}" class="btn btn-back">Back to Dashboard</a>
+
+    <script>
+        let videoElement = document.getElementById('videoElement');
+        let predictionSpan = document.getElementById('prediction');
+        let videoInterval = null;
+        let predictionInterval = null;
+
+        function startVideo() {
+            videoElement.src = '/video_feed';
+
+            // Start polling for prediction
+            predictionInterval = setInterval(() => {
+                fetch('/get_prediction')
+                    .then(response => response.json())
+                    .then(data => {
+                        predictionSpan.textContent = data.prediction || '-';
+                    })
+                    .catch(error => {
+                        console.error('Prediction fetch error:', error);
+                        predictionSpan.textContent = '-';
+                    });
+            }, 500);
+        }
+
+        function stopVideo() {
+            videoElement.src = '';
+            clearInterval(predictionInterval);
+            predictionSpan.textContent = '-';
+        }
+    </script>
+
+</body>
+</html>

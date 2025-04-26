@@ -1,6 +1,6 @@
 {% extends "dashboard_base.html" %}
 {% block content %}
-<div class="admin-dashboard">
+<!--<div class="admin-dashboard">
     <div class="dashboard-container">
         <h2>Welcome, {{ username }}! </h2>
         <p>Welcome, Admin! Manage content here.</p>
@@ -10,6 +10,52 @@
            
         </div>
     </div>
+</div>-->
+<div class="admin-dashboard container">
+    <!-- Welcome Message -->
+    <div class="dashboard-header">
+        <h2>Welcome, {{ username }}!</h2>
+        <p>Manage content here.</p>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="dashboard-cards">
+        <!-- Learning Module Card -->
+        <a href="{{ url_for('manage_learning') }}" class="card">
+            <div class="card-icon">
+                <i class="fas fa-book"></i> <!-- Icon for Learning Module -->
+            </div>
+            <div class="card-content">
+                <h3>Learning Module</h3>
+                <p>Manage learning content for sign language lessons.</p>
+            </div>
+        </a>
+
+        <!-- Practice Module Card -->
+        <a href="#" class="card">
+            <div class="card-icon">
+                <i class="fa-regular fa-calendar-check"></i> <!-- Icon for Practice Module -->
+            </div>
+            <div class="card-content">
+                <h3>Practice Module</h3>
+                <p>Review and update sign recognition practice.</p>
+            </div>
+        </a>
+
+        <!-- Quiz Module Card -->
+        <a href="#" class="card">
+            <div class="card-icon">
+                <i class="fas fa-question-circle"></i> <!-- Icon for Quiz Module -->
+            </div>
+            <div class="card-content">
+                <h3>Quiz Module</h3>
+                <p>Manage quizzes to test sign language skills.</p>
+            </div>
+        </a>
+    </div>
 </div>
+
+<!-- Styles -->
+
 {% endblock %}
 

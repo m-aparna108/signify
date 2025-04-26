@@ -1,15 +1,32 @@
 {% extends "dashboard_base.html" %}
 
 {% block content %}
-<div class="user-dashboard">
-    <div class="dashboard-container">
-        <h2>Welcome, {{ username }}!</h2>
-        <p>Start learning sign language today.</p>
+<div class="dashboard-page">
+    <div class="user-dashboard">
+  <div class="dashboard-container">
+      <h2>Welcome, {{ username }}!</h2>
+      <p>Start learning sign language today.</p>
 
-        <div class="user-links">
-            <a href="{{ url_for('learning_module') }}" class="btn btn-primary">Learn Sign Language</a>
-            
-        </div>
-    </div>
+      <div class="user-links">
+          <a href="{{ url_for('learning_module') }}" class="card-link"">
+          <i class="fas fa-book-open card-icon"></i>
+        <div class="card-desc">Interactive Lessons</div>
+        <div class="card-title">Learn Sign Language</div>
+          </a>
+          <a href="{{ url_for('practice') }}"class="card-link">
+          <i class="fas fa-hand-scissors card-icon"></i>
+        <div class="card-desc">Real-Time Practice</div>
+        <div class="card-title">Practice Session</div>
+          </a>
+          <a href="#"class="card-link">
+          <i class="fas fa-brain card-icon"></i>
+        <div class="card-desc">Test Your Skills</div>
+        <div class="card-title">Quiz</div>
+          </a>
+
+          
+      </div>
+  </div>
+</div>
 </div>
 {% endblock %}
