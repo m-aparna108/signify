@@ -264,5 +264,13 @@ def video_feed():
 def get_prediction():
     return jsonify({'prediction': get_latest_prediction()})
 
+#----------------------------------------------------testing image insertion to mongo------
+
+
+
+
+
+
+
 
 from app import routes
