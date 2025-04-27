@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import mongo
 from bson.objectid import ObjectId
+from datetime import datetime 
 
 """class User:
    
@@ -181,5 +182,175 @@ class Sign:
             print(f"Deletion Error: {e}")
             return False
 
+
+class Question:
+    """Model for managing questions"""
+
+    @staticmethod
+    def add_question(
+        question_text,
+        question_media_path,  # <-- path to the question image/audio/video
+        option_1,
+        option_2,
+        option_3,
+        option_4,
+        option_1_media_path,
+        option_2_media_path,
+        option_3_media_path,
+        option_4_media_path,
+        correct_answer,
+        sign_id,
+        user
+    ):
+        
+
+
+        question_data = {
+            "question_text": question_text,
+            "question_media": question_media_path,
+            "options": [
+                {"text": option_1, "media": option_1_media_path},
+                {"text": option_2, "media": option_2_media_path},
+                {"text": option_3, "media": option_3_media_path},
+                {"text": option_4, "media": option_4_media_path}
+            ],
+            "correct_answer": correct_answer,
+            "sign_id": ObjectId(sign_id) if sign_id else None
+        }
+        mongo.db.questions.insert_one(question_data)
+
+    @staticmethod
+    def update_question(
+        question_id,
+        question_text,
+        question_media_path,
+        option_1,
+        option_2,
+        option_3,
+        option_4,
+        option_1_media_path,
+        option_2_media_path,
+        option_3_media_path,
+        option_4_media_path,
+        correct_answer,
+        sign_id,
+        user
+    ):
+
+        updated_data = {
+            "question_text": question_text,
+            "question_media": question_media_path,
+            "options": [
+                {"text": option_1, "media": option_1_media_path},
+                {"text": option_2, "media": option_2_media_path},
+                {"text": option_3, "media": option_3_media_path},
+                {"text": option_4, "media": option_4_media_path}
+            ],
+            "correct_answer": correct_answer,
+            "sign_id": ObjectId(sign_id) if sign_id else None
+        }
+        mongo.db.questions.update_one(
+            {"_id": ObjectId(question_id)},
+            {"$set": updated_data}
+        )
+
+    @staticmethod
+    def delete_question(question_id, user):
+        """Delete a question by ID (admin only)"""
+    
+        mongo.db.questions.delete_one({"_id": ObjectId(question_id)})
+
+    @staticmethod
+    def get_question(question_id):
+        """Retrieve a question by ID"""
+        return mongo.db.questions.find_one({"_id": ObjectId(question_id)})
+
+
+class Quiz:
+    """Model for managing quizzes"""
+
+    @staticmethod
+    def add_quiz(title, description, difficulty_level, user):
+       
+        quiz_data = {
+            "title": title,
+            "description": description,
+            "created_at": datetime.utcnow(),
+            "difficulty_level": difficulty_level
+        }
+        mongo.db.quizzes.insert_one(quiz_data)
+
+    @staticmethod
+    def update_quiz(quiz_id, title, description, difficulty_level, user):
+        
+
+        mongo.db.quizzes.update_one(
+            {"_id": ObjectId(quiz_id)},
+            {
+                "$set": {
+                    "title": title,
+                    "description": description,
+                    "difficulty_level": difficulty_level
+                }
+            }
+        )
+
+    @staticmethod
+    def delete_quiz(quiz_id, user):
+        """Delete a quiz (admin only)"""
+       
+        mongo.db.quizzes.delete_one({"_id": ObjectId(quiz_id)})
+
+    @staticmethod
+    def get_quiz(quiz_id):
+        """Retrieve a quiz by ID"""
+        return mongo.db.quizzes.find_one({"_id": ObjectId(quiz_id)})
+
+
+class QuizQuestion:
+    """Model for managing quiz-question mappings"""
+
+    @staticmethod
+    def add_quiz_question(quiz_id, question_id, user):
+        """Map a question to a quiz (admin only)"""
+        
+        mapping_data = {
+            "quiz_id": ObjectId(quiz_id),
+            "question_id": ObjectId(question_id),
+            "created_at": datetime.utcnow()
+        }
+        mongo.db.quizquestions.insert_one(mapping_data)
+
+    @staticmethod
+    def get_questions_for_quiz(quiz_id):
+        """Retrieve all questions for a quiz"""
+        mappings = list(mongo.db.quizquestions.find({"quiz_id": ObjectId(quiz_id)}))
+        question_ids = [m["question_id"] for m in mappings]
+        return list(mongo.db.questions.find({"_id": {"$in": question_ids}}))
+
+
+class QuizAttempt:
+    """Model for managing quiz attempts"""
+
+    @staticmethod
+    def add_attempt(user_id, quiz_id, score):
+        """Record a quiz attempt"""
+        attempt_data = {
+            "user_id": ObjectId(user_id),
+            "quiz_id": ObjectId(quiz_id),
+            "score": score,
+            "attempt_date": datetime.utcnow()
+        }
+        mongo.db.quizattempts.insert_one(attempt_data)
+
+    @staticmethod
+    def get_attempts_by_user(user_id):
+        """Get all attempts for a user"""
+        return list(mongo.db.quizattempts.find({"user_id": ObjectId(user_id)}))
+
+    @staticmethod
+    def get_attempts_for_quiz(quiz_id):
+        """Get all attempts for a quiz"""
+        return list(mongo.db.quizattempts.find({"quiz_id": ObjectId(quiz_id)}))
 
 from app import mongo
