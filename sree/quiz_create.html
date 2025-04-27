@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cyberpunk Quiz Creation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz_create.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2><i class="fa-solid fa-pen-nib"></i> Quiz Creation Page</h2>
+      <a href="{{ url_for('admin_dashboard') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+    </div>
+
+    <form id="quizForm" method="POST" action="{{ url_for('quiz.create_quiz_with_question') }}" enctype="multipart/form-data">
+      {{ quiz_form.hidden_tag() }}
+      {{ standalone_question_form.hidden_tag() }}
+      {{ question_to_quiz_form.hidden_tag() }}
+
+      <div class="create-quiz-section">
+        <h3><i class="fa-solid fa-circle-plus"></i> Create New Quiz</h3>
+        <input type="text" name="quiz_title" id="newQuizTitle" placeholder="Enter new quiz title" oninput="updateLivePreview()" />
+        <input type="text" name="quiz_description" id="newQuizDesc" placeholder="Optional description" oninput="updateLivePreview()" />
+        <label>Quiz Difficulty</label>
+        <select name="quiz_difficulty" id="quizDifficulty" onchange="updateLivePreview()">
+          <option value="">-- Select Difficulty --</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+
+      <div id="questions-container">
+        <div class="question-block">
+          <button type="button" class="remove-question" onclick="removeQuestionBlock(this)"><i class="fa-solid fa-xmark"></i></button>
+          <label>Question Title</label>
+          <input type="text" class="question-title" name="question_title[]" placeholder="Enter your question here..." oninput="updateLivePreview()">
+          <label>Upload Media for Question</label>
+          <input type="file" class="question-media" name="question_media[]" accept="image/*,video/*" oninput="updateLivePreview()" onchange="updateLivePreview()">
+          <label>Answer Options</label>
+          <div class="answer-options">
+            <div class="option-group"><input type="text" class="option-text" name="option_a[]" placeholder="Option A" oninput="updateLivePreview()"><input type="file" class="option-media" name="option_a_media[]" accept="image/*,video/*" oninput="updateLivePreview()" onchange="updateLivePreview()"></div>
+            <div class="option-group"><input type="text" class="option-text" name="option_b[]" placeholder="Option B" oninput="updateLivePreview()"><input type="file" class="option-media" name="option_b_media[]" accept="image/*,video/*" oninput="updateLivePreview()" onchange="updateLivePreview()"></div>
+            <div class="option-group"><input type="text" class="option-text" name="option_c[]" placeholder="Option C" oninput="updateLivePreview()"><input type="file" class="option-media" name="option_c_media[]" accept="image/*,video/*" oninput="updateLivePreview()" onchange="updateLivePreview()"></div>
+            <div class="option-group"><input type="text" class="option-text" name="option_d[]" placeholder="Option D" oninput="updateLivePreview()"><input type="file" class="option-media" name="option_d_media[]" accept="image/*,video/*" oninput="updateLivePreview()" onchange="updateLivePreview()"></div>
+          </div>
+          <label>Correct Answer</label>
+          <select class="correct-answer" name="correct_answer[]" onchange="updateLivePreview()">
+            <option value="">-- Select Correct Option --</option>
+            <option value="A">Option A</option>
+            <option value="B">Option B</option>
+            <option value="C">Option C</option>
+            <option value="D">Option D</option>
+          </select>
+          <label>Select Quiz to Add This Question To:</label>
+          <select class="quiz-dropdown" name="assign_quiz[]" onchange="updateLivePreview()">
+            <option value="">-- Choose Quiz --</option>
+            {% for quiz in all_quizzes %}
+              <option value="{{ quiz.title }}">{{ quiz.title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <button type="button" class="add-more" onclick="addQuestionBlock()">+</button>
+
+      <div class="button-group">
+        <button type="submit" class="btn-add" formaction="{{ url_for('quiz.add_standalone_question') }}"><i class="fa-solid fa-plus"></i> Add Question</button>
+        <button type="submit" class="btn-to-quiz" formaction="{{ url_for('quiz.add_question_to_quiz') }}"><i class="fa-solid fa-thumbtack"></i> Add to Quiz</button>
+        <button type="submit" class="btn-create" formaction="{{ url_for('quiz.create_quiz_with_question') }}"><i class="fa-solid fa-rocket"></i> Create Quiz</button>
+      </div>
+    </form>
+
+    <div class="preview-box">
+      <h3><i class="fa-solid fa-magnifying-glass"></i> Preview</h3>
+      <div class="question-preview" id="questionPreview"></div>
+    </div>
+  </div>
+
+  <script>
+    function generateUniqueID(prefix = '') {
+      const timestamp = Date.now().toString(36);
+      const random = Math.random().toString(36).substring(2, 8);
+      return prefix + timestamp + random;
+    }
+
+    function renameInputs() {
+      const blocks = document.querySelectorAll('.question-block');
+      blocks.forEach((block) => {
+        block.querySelector('.question-title').name = 'question_title[]';
+        block.querySelector('.question-media').name = 'question_media[]';
+        block.querySelector('.correct-answer').name = 'correct_answer[]';
+        block.querySelector('.quiz-dropdown').name = 'assign_quiz[]';
+    
+        const optionGroups = block.querySelectorAll('.option-group');
+        options.forEach((opt, i) => {
+          const text = opt.querySelector(".option-text").value;
+          const mediaInput = opt.querySelector(".option-media");
+          let optionMediaHTML = "";
+        
+          if (mediaInput && mediaInput.files.length > 0) {
+            const file = mediaInput.files[0];
+            const url = URL.createObjectURL(file);
+            if (file.type.startsWith("image/")) {
+              optionMediaHTML = `<br><img src="${url}" alt="Option Image" style="width: 100px; height: auto;">`;
+            } else if (file.type.startsWith("video/")) {
+              optionMediaHTML = `<br><video controls width="100"><source src="${url}"></video>`;
+            }
+          }
+        
+          html += `<span class="option-badge">Option ${String.fromCharCode(65 + i)}:</span> ${text}${optionMediaHTML}<br>`;
+        });
+        
+      });
+    }
+    
+
+    function addQuestionBlock() {
+      const container = document.getElementById("questions-container");
+      const firstBlock = container.querySelector(".question-block");
+      const newBlock = firstBlock.cloneNode(true);
+
+      newBlock.querySelectorAll('input[type="text"]').forEach(input => input.value = "");
+      newBlock.querySelectorAll('input[type="file"]').forEach(input => input.value = "");
+      newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+      container.appendChild(newBlock);
+      renameInputs();
+      updateLivePreview();
+    }
+
+    function removeQuestionBlock(button) {
+      const block = button.closest('.question-block');
+      const container = document.getElementById("questions-container");
+      if (container.querySelectorAll('.question-block').length > 1) {
+        block.remove();
+        renameInputs();
+        updateLivePreview();
+      } else {
+        alert("You must have at least one question block.");
+      }
+    }
+
+    function updateLivePreview() {
+      const questionBlocks = document.querySelectorAll(".question-block");
+
+      const title = document.getElementById("newQuizTitle").value;
+      const desc = document.getElementById("newQuizDesc").value;
+      const difficulty = document.getElementById("quizDifficulty").value;
+
+      let html = `<h4>Quiz Title: ${title}</h4>`;
+      html += `<p>Description: ${desc}</p>`;
+      html += `<p>Difficulty: ${difficulty}</p>`;
+      html += `<hr><h4>Questions Preview:</h4>`;
+
+      questionBlocks.forEach((block, index) => {
+        const question = block.querySelector(".question-title").value;
+        const correct = block.querySelector(".correct-answer").value;
+        const questionMediaInput = block.querySelector(".question-media");
+        const options = block.querySelectorAll(".option-group");
+
+        let mediaHTML = "";
+        if (questionMediaInput && questionMediaInput.files.length > 0) {
+          const file = questionMediaInput.files[0];
+          const url = URL.createObjectURL(file);
+          if (file.type.startsWith("image/")) {
+            mediaHTML = `<br><img src="${url}" alt="Question Image">`;
+          } else if (file.type.startsWith("video/")) {
+            mediaHTML = `<br><video controls width="100"><source src="${url}"></video>`;
+          }
+        }
+
+        html += `<div><strong>Q${index + 1}: ${question}</strong>${mediaHTML}<br>`;
+        options.forEach((opt, i) => {
+          const text = opt.querySelector(".option-text").value;
+          html += `<span class="option-badge">Option ${String.fromCharCode(65 + i)}:</span> ${text}<br>`;
+        });
+        html += `<span class="correct-answer">Correct: ${correct}</span></div><br>`;
+      });
+
+      document.getElementById("questionPreview").innerHTML = html;
+    }
+
+    window.onload = () => {
+      renameInputs();
+      updateLivePreview();
+    };
+  </script>
+</body>
+</html>
