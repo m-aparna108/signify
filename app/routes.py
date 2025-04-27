@@ -263,6 +263,31 @@ def video_feed():
 @app.route('/get_prediction')
 def get_prediction():
     return jsonify({'prediction': get_latest_prediction()})
+#-------------------------------------------------------------------------
+@app.route('/quiz-admin-dashboard')
+def quiz_admin_dashboard():
+    # Count total users
+    total_users = mongo.db.users.count_documents({})
 
+    # Count total quizzes
+    total_quizzes = mongo.db.quizzes.count_documents({})
+
+    # Calculate average score from all quiz attempts
+    attempts = list(mongo.db.quizattempts.find({}))
+    total_attempts = len(attempts)
+
+    if total_attempts > 0:
+        total_score = sum(attempt.get("score", 0) for attempt in attempts)
+        average_score = round(total_score / total_attempts, 2)
+    else:
+        average_score = 0
+
+    return render_template(
+        'quiz_admin_dashboard.html',  # << template name updated
+        total_users=total_users,
+        total_quizzes=total_quizzes,
+        average_score=average_score,
+        total_attempts=total_attempts
+    )
 
 from app import routes
