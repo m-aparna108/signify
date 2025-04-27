@@ -1,16 +1,14 @@
 from app import app, mongo
-from flask import render_template
-from app.forms import LoginForm, RegisterForm
-from app.models import User
-from flask import redirect, url_for, flash, request, session
+from app.forms import LoginForm, RegisterForm, CreateQuizForm, StandaloneQuestionForm
+from app.models import User, Sign, Quiz, Question, QuizQuestion
+from flask import redirect, url_for, flash, request, session, jsonify, current_app, render_template
 from werkzeug.security import check_password_hash
-from flask import request, jsonify
+from werkzeug.utils import secure_filename
 from bson import ObjectId,errors
-from app.models import Sign
 import os
-from app.models import Quiz
-from app.forms import CreateQuizForm
+from math import ceil
 from datetime import datetime
+
 
 
 @app.route("/")
@@ -327,10 +325,8 @@ def create_quiz():
   
 
 
-
-
 #----------------------------available quiz---------------
-from math import ceil
+
 @app.route('/user/available_quizzes', methods=['GET'])
 def available_quizzes():
     try:
@@ -372,4 +368,125 @@ def start_quiz(quiz_id):
     return render_template('start_quiz.html', quiz=quiz)
 
 
+
+
+#--------------------create questions------------------
+
+@app.route("/add_standalone_question", methods=["GET", "POST"])
+def add_standalone_question():
+    form = StandaloneQuestionForm()
+
+    # Populate quiz_title dropdown
+    quizzes = mongo.db.quizzes.find()
+    form.quiz_title.choices = [('', 'None')] + [(quiz['title'], quiz['title']) for quiz in quizzes]
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            # Save the question image if uploaded
+            question_image = form.question_image.data
+            media_path = None
+
+            if question_image:
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+
+                filename = secure_filename(question_image.filename)
+                save_path = os.path.join(upload_folder, filename)
+                question_image.save(save_path)
+                media_path = f"/static/uploads/{filename}"
+
+            # Prepare the options
+            options = [
+                {"option_text": form.option1.data},
+                {"option_text": form.option2.data},
+                {"option_text": form.option3.data},
+                {"option_text": form.option4.data}
+            ]
+
+            # Add the standalone question
+            question_id = Question.add_question(
+                question_text=form.question_text.data,
+                options=options,
+                correct_answer=form.correct_answer.data,
+                media_path=media_path
+            )
+
+            # If a quiz is selected, map the question to the quiz
+            if form.quiz_title.data:
+                quiz = mongo.db.quizzes.find_one({"title": form.quiz_title.data})
+                if quiz:
+                    QuizQuestion.add_quiz_question(
+                        quiz_id=quiz["_id"],
+                        question_id=question_id,
+                        user=None
+                    )
+
+            flash("Question created successfully!", "success")
+            return redirect(url_for('add_standalone_question'))
+        else:
+            print(form.errors)
+    return render_template("create_questions.html", form=form)
+
+#------------------------------ Edit Quizzes ------------------------------#
+# Route to display quizzes with pagination
+@app.route('/admin/quiz_management', methods=['GET'])
+def quiz_management():
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = 10
+
+        # Get filters
+        search_query = request.args.get('search', '').strip()
+        difficulty_filter = request.args.get('difficulty', '')
+        sort_order = request.args.get('sort', '')
+
+        # Build MongoDB query
+        query = {}
+        if search_query:
+            query['title'] = {'$regex': search_query, '$options': 'i'}  # case-insensitive search
+        if difficulty_filter:
+            query['difficulty_level'] = difficulty_filter
+
+        # Build sort option
+        sort = [('created_at', -1)]  # Default: newest first
+        if sort_order == 'oldest':
+            sort = [('created_at', 1)]
+
+        total_quizzes = mongo.db.quizzes.count_documents(query)
+        quizzes_cursor = mongo.db.quizzes.find(query).sort(sort).skip((page - 1) * per_page).limit(per_page)
+        quizzes = list(quizzes_cursor)
+
+        total_pages = ceil(total_quizzes / per_page)
+
+        return render_template('quiz_management.html', quizzes=quizzes, page=page, total_pages=total_pages)
+
+    except Exception as e:
+        flash(str(e), 'danger')
+        return render_template('quiz_management.html', quizzes=[], page=1, total_pages=1)
+
+
+
+@app.route('/admin/update_or_delete_quiz', methods=['POST'])
+def update_or_delete_quiz():
+    try:
+        if 'update' in request.form:
+            quiz_id = request.form['update']
+            title = request.form.get(f'title_{quiz_id}')
+            description = request.form.get(f'description_{quiz_id}')
+            difficulty_level = request.form.get(f'difficulty_level_{quiz_id}')
+
+            Quiz.update_quiz(quiz_id, title, description, difficulty_level)
+            flash('Quiz updated successfully!', 'success')
+
+        elif 'delete' in request.form:
+            quiz_id = request.form['delete']
+            Quiz.delete_quiz(quiz_id, user=None)
+
+            flash('Quiz deleted successfully!', 'success')
+
+    except Exception as e:
+        flash(str(e), 'danger')
+
+    return redirect(url_for('quiz_management', page=request.args.get('page', 1)))
 

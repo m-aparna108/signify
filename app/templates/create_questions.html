@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Question</title>
+  {# <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz_create.css') }}"> #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/create_question.css') }}">
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="flash-card {{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+    <div class="container">
+      <h1>Create a New Question</h1>
+      
+      <a href="{{url_for('quiz_admin_dashboard')}}" class="back-btn">Back</a>
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+  
+        <!-- Question Text -->
+        <label for="question_text">Question Text</label>
+        {{ form.question_text(class="form-control") }}
+  
+        <!-- Question Image -->
+        <label for="question_image">Question Image (optional)</label>
+        {{ form.question_image(class="form-control") }}
+  
+        <!-- Answer Options -->
+        <div class="answer-options">
+          <label>Options</label>
+          <div class="option-group">{{ form.option1(class="form-control") }}</div>
+          <div class="option-group">{{ form.option2(class="form-control") }}</div>
+          <div class="option-group">{{ form.option3(class="form-control") }}</div>
+          <div class="option-group">{{ form.option4(class="form-control") }}</div>
+        </div>
+  
+        <!-- Correct Answer Dropdown -->
+        <label for="correct_answer">Correct Answer</label>
+        {{ form.correct_answer(class="form-control") }}
+  
+        <!-- Quiz Title Dropdown -->
+        <label for="quiz_title">Assign to Quiz (Optional)</label>
+        {{ form.quiz_title(class="form-control") }}
+  
+        <!-- Submit Button -->
+        <div class="button-group">
+          {{ form.submit(class="btn-create") }}
+        </div>
+      </form>
+  
+    </div>
+  </body>
+  
+</html>

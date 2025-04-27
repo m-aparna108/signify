@@ -231,4 +231,70 @@ class Quiz:
         """Retrieve a quiz by ID"""
         return mongo.db.quizzes.find_one({"_id": ObjectId(quiz_id)})
 
+#------------------------------------------------------------------------
+
+
+class Question:
+    """Model for managing questions"""
+
+    @staticmethod
+    def add_question(question_text, options, correct_answer, media_path=None):
+        """Add a new question"""
+        question = {
+            "question_text": question_text,
+            "options": options,
+            "correct_answer": correct_answer,
+            "media_path": media_path,
+            "created_at": datetime.utcnow()
+        }
+        result = mongo.db.questions.insert_one(question)
+        return str(result.inserted_id)
+
+    @staticmethod
+    def get_question_by_id(question_id):
+        """Retrieve a question by its ID"""
+        question = mongo.db.questions.find_one({"_id": ObjectId(question_id)})
+        return question
+
+    @staticmethod
+    def update_question(question_id, updated_data):
+        """Update an existing question"""
+        result = mongo.db.questions.update_one(
+            {"_id": ObjectId(question_id)},
+            {"$set": updated_data}
+        )
+        return result.modified_count
+
+    @staticmethod
+    def delete_question(question_id):
+        """Delete a question by its ID"""
+        result = mongo.db.questions.delete_one({"_id": ObjectId(question_id)})
+        return result.deleted_count
+
+
+class QuizQuestion:
+    """Model for managing quiz-question mappings"""
+
+    @staticmethod
+    def add_quiz_question(quiz_id, question_id, user):
+        """Map a question to a quiz (admin only)"""
+        
+
+        mapping_data = {
+            "quiz_id": ObjectId(quiz_id),
+            "question_id": ObjectId(question_id),
+            "created_at": datetime.utcnow()
+        }
+        result = mongo.db.quizquestions.insert_one(mapping_data)
+        return str(result.inserted_id)
+
+    @staticmethod
+    def get_questions_for_quiz(quiz_id):
+        """Retrieve all questions linked to a specific quiz"""
+        mappings = list(mongo.db.quizquestions.find({"quiz_id": ObjectId(quiz_id)}))
+        question_ids = [mapping["question_id"] for mapping in mappings]
+        return list(mongo.db.questions.find({"_id": {"$in": question_ids}}))
+
+
+
 from app import mongo
