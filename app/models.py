@@ -1,7 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import mongo
 from bson.objectid import ObjectId
-
+from werkzeug.exceptions import BadRequest, Forbidden
+from datetime import datetime
 """class User:
    
 
@@ -180,6 +181,56 @@ class Sign:
         except Exception as e:
             print(f"Deletion Error: {e}")
             return False
+
+#-----------------------testing----------------
+
+class Quiz:
+    """Model for managing quizzes"""
+
+    @staticmethod
+    def add_quiz(title, description, difficulty_level):
+        
+
+        if difficulty_level not in ["Easy", "Medium", "Hard"]:
+            raise BadRequest("Difficulty level must be 'Easy', 'Medium', or 'Hard'.")
+
+        quiz_data = {
+            "title": title,
+            "description": description,
+            "created_at": datetime.utcnow(),
+            "difficulty_level": difficulty_level
+        }
+        mongo.db.quizzes.insert_one(quiz_data)
+
+    @staticmethod
+    def update_quiz(quiz_id, title, description, difficulty_level):
+        
+
+        if difficulty_level not in ["Easy", "Medium", "Hard"]:
+            raise BadRequest("Invalid difficulty level.")
+
+        mongo.db.quizzes.update_one(
+            {"_id": ObjectId(quiz_id)},
+            {
+                "$set": {
+                    "title": title,
+                    "description": description,
+                    "difficulty_level": difficulty_level
+                }
+            }
+        )
+
+    @staticmethod
+    def delete_quiz(quiz_id, user):
+        """Delete a quiz (admin only)"""
+       
+        mongo.db.quizzes.delete_one({"_id": ObjectId(quiz_id)})
+
+    @staticmethod
+    def get_quiz(quiz_id):
+        """Retrieve a quiz by ID"""
+        return mongo.db.quizzes.find_one({"_id": ObjectId(quiz_id)})
+
 
 
 from app import mongo
