@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Quiz Only</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz_create.css') }}">
+  <style>
+    .flash {
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .flash-success {
+      background-color: #00ff66;
+      color: #000;
+    }
+    .flash-danger {
+      background-color: #ff4d4d;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Create New Quiz</h2>
+      <a href="#" class="back-btn">Back</a>
+    </div>
+
+    {# Flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <label>{{ form.title.label }}</label>
+      {{ form.title(class="form-control", placeholder="Enter Quiz Title") }}
+
+      <label>{{ form.description.label }}</label>
+      {{ form.description(class="form-control", placeholder="Description (optional)") }}
+
+      <label>Created At</label>
+      <input type="text" readonly value="{{ created_at }}" class="form-control">
+
+      <label>{{ form.difficulty_level.label }}</label>
+      {{ form.difficulty_level(class="form-control") }}
+
+      <div class="button-group" style="margin-top: 20px;">
+        {{ form.submit(class="btn-create") }}
+      </div>
+    </form>
+  </div>
+</body>
+</html>
