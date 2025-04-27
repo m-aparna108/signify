@@ -1,0 +1,159 @@
+/* Base Styles */
+body {
+    background-color: #0a0f1c;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h2.neon-text {
+    color: #7df9ff;
+    text-shadow: 0 0 5px #7df9ff;
+    margin-bottom: 0;
+  }
+  
+  .container {
+    padding: 2rem;
+  }
+  
+  /* Header Section */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #7df9ff33;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+  
+  .back-btn {
+    background: transparent;
+    color: #7df9ff;
+    border: 1px solid #7df9ff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  
+  .back-btn:hover {
+    background: rgba(125, 249, 255, 0.1);
+    box-shadow: 0 0 8px #7df9ff;
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    background-color: #7df9ff;
+    border: none;
+    color: #000;
+  }
+  
+  .btn-primary:hover {
+    background-color: #00d1ff;
+  }
+  
+  .btn-outline-light {
+    color: #fff;
+    border-color: #fff;
+  }
+  
+  /* Input & Select */
+  input.form-control,
+  select.form-select {
+    background-color: #10182f;
+    border: 1px solid #7df9ff55;
+    color: #fff;
+  }
+  
+  input::placeholder {
+    color: #aaa;
+  }
+  
+  select option {
+    background: #0a0f1c;
+  }
+  
+  /* Table Styles */
+  .cyber-table {
+    width: 100%;
+    background: #10182f;
+    color: #e0e0e0;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 12px #7df9ff22;
+  }
+  
+  .cyber-table th, .cyber-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #7df9ff22;
+    text-align: left;
+  }
+  
+  .cyber-table th {
+    background-color: #0f1529;
+    color: #7df9ff;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border-bottom: 2px solid #7df9ff44;
+  }
+  
+  .cyber-table tr:hover {
+    background-color: #18223c;
+    transition: background 0.3s ease;
+  }
+  
+  /* Table Actions */
+  .table-actions .btn {
+    margin-right: 0.25rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Pagination */
+  .pagination {
+    margin-top: 1.5rem;
+  }
+  
+  .pagination .page-link {
+    background-color: #0f1529;
+    color: #7df9ff;
+    border: 1px solid #7df9ff33;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #7df9ff;
+    color: #000;
+    font-weight: bold;
+  }
+  
+  .pagination .page-link:hover {
+    background-color: #1e2a4a;
+  }
+  
+  /* Stats */
+  .stats {
+    background: #0f1529;
+    border: 1px solid #7df9ff33;
+    border-radius: 10px;
+    padding: 1rem;
+    color: #7df9ff;
+    font-weight: 600;
+    box-shadow: 0 0 10px #7df9ff22;
+  }
+  
+  .stats-box {
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Tips Section */
+  .quick-tips {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #11192d;
+    color: #ccc;
+    font-style: italic;
+    border-left: 4px solid #7df9ff;
+  }
+  

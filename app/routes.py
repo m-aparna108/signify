@@ -331,13 +331,68 @@ def create_quiz():
 def add_questions_page():
     return render_template('add_questions.html')
 
+#------------------------------ Edit Quizzes ------------------------------#
+
+from math import ceil
+# Route to display quizzes with pagination
+@app.route('/admin/quiz_management', methods=['GET'])
+def quiz_management():
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = 10
+
+        # Get filters
+        search_query = request.args.get('search', '').strip()
+        difficulty_filter = request.args.get('difficulty', '')
+        sort_order = request.args.get('sort', '')
+
+        # Build MongoDB query
+        query = {}
+        if search_query:
+            query['title'] = {'$regex': search_query, '$options': 'i'}  # case-insensitive search
+        if difficulty_filter:
+            query['difficulty_level'] = difficulty_filter
+
+        # Build sort option
+        sort = [('created_at', -1)]  # Default: newest first
+        if sort_order == 'oldest':
+            sort = [('created_at', 1)]
+
+        total_quizzes = mongo.db.quizzes.count_documents(query)
+        quizzes_cursor = mongo.db.quizzes.find(query).sort(sort).skip((page - 1) * per_page).limit(per_page)
+        quizzes = list(quizzes_cursor)
+
+        total_pages = ceil(total_quizzes / per_page)
+
+        return render_template('quiz_management.html', quizzes=quizzes, page=page, total_pages=total_pages)
+
+    except Exception as e:
+        flash(str(e), 'danger')
+        return render_template('quiz_management.html', quizzes=[], page=1, total_pages=1)
 
 
 
+@app.route('/admin/update_or_delete_quiz', methods=['POST'])
+def update_or_delete_quiz():
+    try:
+        if 'update' in request.form:
+            quiz_id = request.form['update']
+            title = request.form.get(f'title_{quiz_id}')
+            description = request.form.get(f'description_{quiz_id}')
+            difficulty_level = request.form.get(f'difficulty_level_{quiz_id}')
 
+            Quiz.update_quiz(quiz_id, title, description, difficulty_level)
+            flash('Quiz updated successfully!', 'success')
 
+        elif 'delete' in request.form:
+            quiz_id = request.form['delete']
+            Quiz.delete_quiz(quiz_id, user=None)
 
+            flash('Quiz deleted successfully!', 'success')
 
+    except Exception as e:
+        flash(str(e), 'danger')
 
+    return redirect(url_for('quiz_management', page=request.args.get('page', 1)))
 
 from app import routes
