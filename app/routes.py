@@ -325,10 +325,67 @@ def create_quiz():
     created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     return render_template('create_quiz_only.html', form=form, created_at=created_at)
   
+#--------------------create questions------------------
+from app.models import Question, QuizQuestion
+from app.forms import StandaloneQuestionForm
+from app import mongo
+from flask import current_app, render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+import os
 
-@app.route('/admin/add_questions')
+@app.route("/add_standalone_question", methods=["GET", "POST"])
+def add_standalone_question():
+    form = StandaloneQuestionForm()
 
-def add_questions_page():
-    return render_template('add_questions.html')
+    # Populate quiz_title dropdown
+    quizzes = mongo.db.quizzes.find()
+    form.quiz_title.choices = [('', 'None')] + [(quiz['title'], quiz['title']) for quiz in quizzes]
 
-from app import routes
+    if request.method == "POST":
+        if form.validate_on_submit():
+            # Save the question image if uploaded
+            question_image = form.question_image.data
+            media_path = None
+
+            if question_image:
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+
+                filename = secure_filename(question_image.filename)
+                save_path = os.path.join(upload_folder, filename)
+                question_image.save(save_path)
+                media_path = f"/static/uploads/{filename}"
+
+            # Prepare the options
+            options = [
+                {"option_text": form.option1.data},
+                {"option_text": form.option2.data},
+                {"option_text": form.option3.data},
+                {"option_text": form.option4.data}
+            ]
+
+            # Add the standalone question
+            question_id = Question.add_question(
+                question_text=form.question_text.data,
+                options=options,
+                correct_answer=form.correct_answer.data,
+                media_path=media_path
+            )
+
+            # If a quiz is selected, map the question to the quiz
+            if form.quiz_title.data:
+                quiz = mongo.db.quizzes.find_one({"title": form.quiz_title.data})
+                if quiz:
+                    QuizQuestion.add_quiz_question(
+                        quiz_id=quiz["_id"],
+                        question_id=question_id,
+                        user=None
+                    )
+
+            flash("Question created successfully!", "success")
+            return redirect(url_for('add_standalone_question'))
+        else:
+            print(form.errors)
+
+    return render_template("create_questions.html", form=form)
