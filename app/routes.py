@@ -326,19 +326,45 @@ def create_quiz():
     return render_template('create_quiz_only.html', form=form, created_at=created_at)
   
 
-@app.route('/admin/add_questions')
 
-def add_questions_page():
-    return render_template('add_questions.html')
 
 
 #----------------------------available quiz---------------
-@app.route('/user/available_quizzes')
+from math import ceil
+@app.route('/user/available_quizzes', methods=['GET'])
 def available_quizzes():
-    quizzes = list(mongo.db.quizzes.find())
-    return render_template('available_quiz.html', quizzes=quizzes)
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = 10
 
+        # Get filters
+        search_query = request.args.get('search', '').strip()
+        difficulty_filter = request.args.get('difficulty', '')
+        sort_order = request.args.get('sort', '')
 
+        # Build MongoDB query
+        query = {}
+        if search_query:
+            query['title'] = {'$regex': search_query, '$options': 'i'}  # case-insensitive search
+        if difficulty_filter:
+            query['difficulty_level'] = difficulty_filter
+
+        # Build sort option
+        sort = [('created_at', -1)]  # Default: newest first
+        if sort_order == 'oldest':
+            sort = [('created_at', 1)]
+
+        total_quizzes = mongo.db.quizzes.count_documents(query)
+        quizzes_cursor = mongo.db.quizzes.find(query).sort(sort).skip((page - 1) * per_page).limit(per_page)
+        quizzes = list(quizzes_cursor)
+
+        total_pages = ceil(total_quizzes / per_page)
+
+        return render_template('available_quiz.html', quizzes=quizzes, page=page, total_pages=total_pages)
+
+    except Exception as e:
+        flash(str(e), 'danger')
+        return render_template('available_quiz.html', quizzes=[], page=1, total_pages=1)
 @app.route('/start_quiz/<quiz_id>')
 def start_quiz(quiz_id):
     quiz = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
@@ -347,4 +373,3 @@ def start_quiz(quiz_id):
 
 
 
-from app import routes
