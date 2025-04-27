@@ -8,6 +8,11 @@ from flask import request, jsonify
 from bson import ObjectId,errors
 from app.models import Sign
 import os
+from app.models import Quiz
+from app.forms import CreateQuizForm
+from datetime import datetime
+
+
 @app.route("/")
 def home():
     return render_template("landing.html")  
@@ -263,6 +268,45 @@ def video_feed():
 @app.route('/get_prediction')
 def get_prediction():
     return jsonify({'prediction': get_latest_prediction()})
+
+#----------------------------------------------------testing image insertion to mongo------
+
+@app.route('/admin/create_quiz', methods=['GET', 'POST'])
+def create_quiz():
+    form = CreateQuizForm()
+
+    if form.validate_on_submit():
+        try:
+            # Add quiz to MongoDB
+            Quiz.add_quiz(
+                title=form.title.data,
+                description=form.description.data,
+                difficulty_level=form.difficulty_level.data,
+            )
+            # Flash success message
+            flash('Quiz created successfully!', 'success')
+
+            # Clear the form data after successful submission
+            form.title.data = ''
+            form.description.data = ''
+            form.difficulty_level.data = ''
+
+        except Exception as e:
+            flash(str(e), 'danger')
+
+    created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    return render_template('create_quiz_only.html', form=form, created_at=created_at)
+
+
+
+
+@app.route('/admin/add_questions')
+
+def add_questions_page():
+    return render_template('add_questions.html')
+
+
+
 
 
 from app import routes
