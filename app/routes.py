@@ -271,11 +271,6 @@ def get_prediction():
 
 #----------------------------------------------------testing image insertion to mongo------
 
-from flask import render_template, flash, redirect, url_for
-from datetime import datetime
-from .forms import CreateQuizForm
-from .models import Quiz
-
 @app.route('/admin/create_quiz', methods=['GET', 'POST'])
 def create_quiz():
     form = CreateQuizForm()
