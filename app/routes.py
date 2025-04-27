@@ -331,4 +331,20 @@ def create_quiz():
 def add_questions_page():
     return render_template('add_questions.html')
 
+
+#----------------------------available quiz---------------
+@app.route('/user/available_quizzes')
+def available_quizzes():
+    quizzes = list(mongo.db.quizzes.find())
+    return render_template('available_quiz.html', quizzes=quizzes)
+
+
+@app.route('/start_quiz/<quiz_id>')
+def start_quiz(quiz_id):
+    quiz = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
+    
+    return render_template('start_quiz.html', quiz=quiz)
+
+
+
 from app import routes

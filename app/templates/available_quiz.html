@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Available Quizzes | Signify</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/available_quiz.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <h2 class="page-title">Available Quizzes</h2>
+
+    <!-- Filters -->
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Search quizzes...">
+      
+      <select id="categoryFilter">
+        <option value="">Filter by Category</option>
+        {% for category in categories %}
+          <option value="{{ category }}">{{ category.capitalize() }}</option>
+        {% endfor %}
+      </select>
+      
+      <select id="difficultyFilter">
+        <option value="">Filter by Difficulty</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <!-- Quiz Cards -->
+    <div id="quizContainer" class="quiz-grid">
+      {% for quiz in quizzes %}
+        <div class="quiz-item" data-category="{{ quiz.category }}" data-difficulty="{{ quiz.difficulty }}">
+          <div class="quiz-card">
+            <h4 class="quiz-title">{{ quiz.title }}</h4>
+            <p class="quiz-description">{{ quiz.description }}</p>
+            <div class="quiz-tags">
+              <span class="tag">{{ quiz.category.capitalize() }}</span>
+              <span class="tag">{{ quiz.difficulty.capitalize() }}</span>
+            </div>
+            <a href="{{ url_for('start_quiz', quiz_id=quiz._id) }}" class="start-btn">Start Quiz</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResults" class="no-results">No quizzes match your filters.</div>
+  </div>
+
+  <!-- Optional filtering JS -->
+  <script src="{{ url_for('static', filename='js/available_quiz.js') }}"></script>
+
+</body>
+</html>
+
