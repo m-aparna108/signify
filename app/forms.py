@@ -25,3 +25,26 @@ class CreateQuizForm(FlaskForm):
     description = StringField('Description')
     difficulty_level = SelectField('Difficulty Level', choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard')], validators=[DataRequired()])
     submit = SubmitField('Create Quiz')
+
+#-----------------------for create question-----------
+from wtforms import StringField, SubmitField, SelectField, FileField
+from wtforms.validators import DataRequired, Optional
+
+class StandaloneQuestionForm(FlaskForm):
+    # Question text
+    question_text = StringField('Question Text', validators=[DataRequired()])
+    # Question image (optional)
+    question_image = FileField('Question Image (optional)', validators=[Optional()])
+    # Answer options
+    option1 = StringField('Option 1', validators=[DataRequired()])
+    option2 = StringField('Option 2', validators=[DataRequired()])
+    option3 = StringField('Option 3', validators=[DataRequired()])
+    option4 = StringField('Option 4', validators=[DataRequired()])
+    # Correct answer
+    correct_answer = SelectField('Correct Answer', choices=[('1', 'Option 1'), ('2', 'Option 2'), ('3', 'Option 3'), ('4', 'Option 4')], validators=[DataRequired()])
+    # Assign to quiz (optional)
+    quiz_title = SelectField('Assign to Quiz (Optional)', choices=[], validators=[Optional()])
+    # Submit button
+    submit = SubmitField('Create Question')
+
+    
