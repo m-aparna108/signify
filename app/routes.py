@@ -331,7 +331,6 @@ def create_quiz():
 def add_questions_page():
     return render_template('add_questions.html')
 
-
 #------------------------------ Edit Quizzes ------------------------------#
 
 from math import ceil
@@ -395,7 +394,5 @@ def update_or_delete_quiz():
         flash(str(e), 'danger')
 
     return redirect(url_for('quiz_management', page=request.args.get('page', 1)))
-
-
 
 from app import routes
