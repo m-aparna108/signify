@@ -144,7 +144,8 @@ h1 {
         <button class="btn btn-stop" onclick="stopVideo()">Stop</button>
     </div>
 
-    <a href="{{ url_for('user_dashboard') }}" class="btn btn-back">Back to Dashboard</a>
+    <a href="javascript:history.back()" class="btn btn-back">Back to Dashboard</a>
+
 
     <script>
         let videoElement = document.getElementById('videoElement');
