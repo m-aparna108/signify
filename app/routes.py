@@ -1,7 +1,7 @@
 from app import app, mongo
 from app.forms import LoginForm, RegisterForm, CreateQuizForm, StandaloneQuestionForm
 from app.models import User, Sign, Quiz, Question, QuizQuestion, QuizAttempt
-from flask import redirect, url_for, flash, request, session, jsonify, current_app, render_template, , current_app, Flask
+from flask import redirect, url_for, flash, request, session, jsonify, current_app, render_template, current_app, Flask
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from bson import ObjectId,errors

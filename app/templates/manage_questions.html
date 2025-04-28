@@ -40,14 +40,6 @@
         {% endfor %}
       </select>
     </div>
-    <div class="col-md-3">
-      <select name="difficulty" class="form-select">
-        <option value="">All Difficulties</option>
-        <option value="Easy" {% if request.args.get('difficulty') == 'Easy' %}selected{% endif %}>Easy</option>
-        <option value="Medium" {% if request.args.get('difficulty') == 'Medium' %}selected{% endif %}>Medium</option>
-        <option value="Hard" {% if request.args.get('difficulty') == 'Hard' %}selected{% endif %}>Hard</option>
-      </select>
-    </div>
     <div class="col-md-2">
       <button type="submit" class="btn btn-primary w-100">Apply</button>
     </div>
