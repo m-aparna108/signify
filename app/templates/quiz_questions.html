@@ -1,0 +1,119 @@
+<!-- templates/quiz_questions.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz_management.css') }}">
+    <style>
+        .question-block {
+            background: #10182f;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #7df9ff22;
+        }
+        .question-block h4 {
+            color: #7df9ff;
+            margin-bottom: 1rem;
+        }
+        .question-block label {
+            display: block;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        .result-card {
+            background: #10182f;
+            border: 2px solid #7df9ff44;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 10px #7df9ff22;
+            color: #e0e0e0;
+        }
+        .btn {
+            background: #7df9ff;
+            color: #000;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #00d1ff;
+            box-shadow: 0 0 10px #7df9ff;
+        }
+        details summary {
+            color: #7df9ff;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        details[open] summary {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="neon-text">Quiz Questions</h2>
+
+        {% if not result_card %}
+        <!-- Show Quiz Form Only if not submitted yet -->
+        <form method="POST" action="{{ url_for('submit_quiz', quiz_id=quiz_id) }}">
+            {% for question in questions %}
+                <div class="question-block">
+                    <h4>Q{{ loop.index }}. {{ question['question_text'] }}</h4>
+
+                    {% if question.media_path %}
+                        <img src="{{ question.media_path }}" alt="Question Image" style="max-width: 100%; border-radius: 8px; margin-top: 10px;">
+                    {% endif %}
+
+                    {% for option in question.options %}
+                        <div>
+                            <label>
+                                <input type="radio" name="q{{ question._id }}" value="{{ option.option_text }}" required>
+                                {{ option.option_text }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn">Submit Quiz</button>
+        </form>
+
+        {% else %}
+        <!-- Show Result Card -->
+        <div class="result-card">
+            <h3 class="neon-text">Your Score: {{ result_card.score }} / {{ result_card.total }}</h3>
+
+            <details>
+                <summary>View Detailed Answers</summary>
+                <div style="margin-top: 20px;">
+                    {% for detail in result_card.details %}
+                        <div class="answer-review" style="margin-bottom: 20px;">
+                            <strong>Q{{ loop.index }}: {{ detail.question_text }}</strong><br>
+                            Your Answer:
+                            <span style="color: {{ 'lightgreen' if detail.is_correct else 'red' }}">
+                                {{ detail.user_selected }}
+                            </span><br>
+                            Correct Answer: <b>{{ detail.correct_answer }}</b>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+            </details>
+
+            <div style="margin-top: 30px;">
+                <a href="{{ url_for('quiz_questions', quiz_id=quiz_id) }}" class="btn">Retry Quiz</a>
+                <a href="{{ url_for('user_dashboard') }}" class="btn">Back to Dashboard</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

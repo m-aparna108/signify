@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Available Quizzes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/available_quiz.css') }}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h4 class="text-light mb-0">Welcome back!</h4>
+    <a href="{{ url_for('user_dashboard') }}" class="btn start-btn d-flex align-items-center">
+      <i class="fas fa-arrow-left me-2"></i> Back
+    </a>
+  </div>
+
+  <div class="mb-5 p-4 text-center rounded" style="background: rgba(125, 249, 255, 0.1); border: 1px solid #7df9ff; margin: 20px; padding: 30px;">
+    <h2 class="fw-bold" style="color: #7df9ff;">Choose Your Next Challenge <i class="fas fa-crosshairs"></i></h2>
+    <p style="color: #e0e0e0cc;">Explore and test your skills with a wide range of quizzes from science to history. Filter and start your journey now!</p>
+  </div>
+
+  <h2 class="page-title">Available Quizzes</h2>
+
+  <!-- Filters Form -->
+  <form method="get" action="{{ url_for('available_quizzes') }}">
+    <div class="filters d-flex flex-wrap align-items-center mb-4 gap-3">
+      <div class="input-group search-wrapper">
+        <span class="input-group-text"></span>
+        <input type="text" class="form-control search-bar" name="search" placeholder="Search quizzes..." value="{{ request.args.get('search', '') }}">
+      </div>
+
+      <div class="input-group filter-wrapper">
+        <span class="input-group-text"></span>
+        <select class="form-select filter-select" name="difficulty">
+          <option value="">All Difficulties</option>
+          <option value="Easy" {% if request.args.get('difficulty') == 'Easy' %}selected{% endif %}>Easy</option>
+          <option value="Medium" {% if request.args.get('difficulty') == 'Medium' %}selected{% endif %}>Medium</option>
+          <option value="Hard" {% if request.args.get('difficulty') == 'Hard' %}selected{% endif %}>Hard</option>
+        </select>
+      </div>
+
+      <div class="input-group filter-wrapper">
+        <span class="input-group-text"></span>
+        <select class="form-select filter-select" name="sort">
+          <option value="">Default</option>
+          <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Newest First</option>
+          <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Oldest First</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-success">Apply</button>
+      </div>
+    </div>
+  </form>
+
+  <hr class="neon-divider">
+
+  <!-- Quiz Cards -->
+  <div id="quizContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for quiz in quizzes %}
+    <div class="col quiz-item" data-difficulty="{{ quiz.difficulty_level }}" data-created-time="{{ quiz.created_at.isoformat() }}">
+      <div class="quiz-card">
+        <h4>{{ quiz.title }}</h4>
+        <p>{{ quiz.description }}</p>
+        <span class="difficulty-badge difficulty-{{ quiz.difficulty_level }}">
+          {{ quiz.difficulty_level.capitalize() }}
+        </span>
+        <div class="mt-3">
+          <a href="{{ url_for('quiz_questions', quiz_id=quiz['_id']) }}" class="start-btn">
+            <i class="fas fa-play me-2"></i>Start Quiz
+        </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- No Results Message -->
+  <div id="noResults" class="text-center text-warning mt-4" style="display: none;">
+    <i class="fas fa-exclamation-circle me-2"></i>No quizzes match your filters.
+  </div>
+
+  <hr class="neon-divider">
+
+  <!-- Fun Facts Section -->
+  <div class="fun-facts-container mt-5 p-4 shadow-sm">
+    <div class="d-flex align-items-center justify-content-center mb-3">
+      <i class="fas fa-lightbulb fa-lg me-2 glowing-icon"></i>
+      <h5 class="m-0 text-glow">Fun Facts about Sign Language</h5>
+    </div>
+    <div class="fun-fact-display">
+      <p id="fact-text" class="fact-text">
+        There's no "silent" in sign language – Deaf people can still "hear" through vibrations and can even enjoy music through tactile sensations!
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-5 pt-4 text-center" style="border-top: 1px solid #7df9ff33;">
+    <p style="color: #7df9ff; font-weight: bold; font-size: 1.1rem;">
+      <i class="fas fa-rocket me-2"></i>Powered by Signify
+    </p>
+    <p class="small" style="color: #e0e0e0cc;">Your journey to mastery begins here.</p>
+    <p class="small" style="color: #888;">© 2025 Signify Quizzes</p>
+  </footer>
+
+</div>
+
+{# <script src="{{ url_for('static', filename='/available_quiz.js') }}"></script> #}
+</body>
+</html>
