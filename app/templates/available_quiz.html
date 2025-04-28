@@ -70,9 +70,9 @@
           {{ quiz.difficulty_level.capitalize() }}
         </span>
         <div class="mt-3">
-          <a href="{{ url_for('start_quiz', quiz_id=quiz._id) }}" class="start-btn">
+          <a href="{{ url_for('quiz_questions', quiz_id=quiz['_id']) }}" class="start-btn">
             <i class="fas fa-play me-2"></i>Start Quiz
-          </a>
+        </a>
         </div>
       </div>
     </div>
@@ -110,6 +110,6 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='/available_quiz.js') }}"></script>
+{# <script src="{{ url_for('static', filename='/available_quiz.js') }}"></script> #}
 </body>
 </html>

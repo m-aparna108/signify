@@ -3,26 +3,7 @@ from app import mongo
 from bson.objectid import ObjectId
 from werkzeug.exceptions import BadRequest, Forbidden
 from datetime import datetime
-"""class User:
-   
 
-    @staticmethod
-    def create_user(name, email, username, password):
-      
-        hashed_password = generate_password_hash(password)
-        user_data = {"name": name, "email": email, "username": username, "password": hashed_password}
-        mongo.db.users.insert_one(user_data)
-
-    @staticmethod
-    def find_by_username(username):
-       
-        return mongo.db.users.find_one({"username": username})
-
-    @staticmethod
-    def check_password(stored_password, provided_password):
-        
-        return check_password_hash(stored_password, provided_password)
-"""
 class User:
     """User model for MongoDB"""
 
@@ -55,75 +36,6 @@ class User:
     def check_password(stored_password, provided_password):
         """Check if the password matches"""
         return check_password_hash(stored_password, provided_password)
-    
-
-    
-"""
-class Sign:
-    #Sign model for managing sign language learning content
-
-    @staticmethod
-    def add_sign(category, name, image, description):
-        #Add a new sign language entry
-        sign_data = {
-            "category": category,
-            "name": name,
-            "image": image,  # Image can be stored as a URL or base64
-            "description": description
-        }
-        mongo.db.signs.insert_one(sign_data)
-
-    @staticmethod
-    def get_signs(page=1, per_page=5, search_query=None, category=None):
-        #Retrieve signs with pagination, search, and category filter
-        query = {}
-        if search_query:
-            query["name"] = {"$regex": search_query, "$options": "i"}
-        if category:
-            query["category"] = category
-
-        signs = (
-            mongo.db.signs.find(query)
-            .skip((page - 1) * per_page)
-            .limit(per_page)
-        )
-        total = mongo.db.signs.count_documents(query)
-
-        return list(signs), total
-    
-
-
-    
-
-    @staticmethod
-    def update_sign(sign_id, category, name, image, description):
-        #Update an existing sign
-        mongo.db.signs.update_one(
-            {"_id": sign_id},
-            {"$set": {"category": category, "name": name, "image": image, "description": description}}
-        )
-
-    @staticmethod
-    def delete_sign(sign_id):
-        #Delete a sign entry
-        mongo.db.signs.delete_one({"_id": sign_id})
-
-
-
-
-    @staticmethod
-    def update_sign(sign_id, category, name, image, description):
-        #Update an existing sign
-        mongo.db.signs.update_one(
-            {"_id": ObjectId(sign_id)},  # Convert string ID to ObjectId
-            {"$set": {"category": category, "name": name, "image": image, "description": description}}
-        )
-
-    @staticmethod
-    def delete_sign(sign_id):
-        #Delete a sign entry
-        mongo.db.signs.delete_one({"_id": ObjectId(sign_id)})  # Convert string ID to ObjectId
-"""
 
 class Sign:
     """Sign model for managing sign language learning content"""
@@ -295,6 +207,55 @@ class QuizQuestion:
         question_ids = [mapping["question_id"] for mapping in mappings]
         return list(mongo.db.questions.find({"_id": {"$in": question_ids}}))
 
+class QuizAttempt:
+    """Model for managing quiz attempts"""
 
+    @staticmethod
+    def add_attempt(user_id, quiz_id, score):
+        """Record a new quiz attempt"""
+        if not user_id or not quiz_id:
+            raise BadRequest("User ID and Quiz ID are required.")
+        if not isinstance(score, (int, float)):
+            raise BadRequest("Score must be a number.")
+
+        attempt_data = {
+            "user_id": ObjectId(user_id),
+            "quiz_id": ObjectId(quiz_id),
+            "score": score,
+            "attempt_date": datetime.utcnow()
+        }
+        result = mongo.db.quizattempts.insert_one(attempt_data)
+        return str(result.inserted_id)
+
+    @staticmethod
+    def get_attempt(attempt_id):
+        """Retrieve a specific attempt by attempt_id"""
+        return mongo.db.quizattempts.find_one({"_id": ObjectId(attempt_id)})
+
+    @staticmethod
+    def get_attempts_by_user(user_id):
+        """Retrieve all attempts made by a specific user"""
+        return list(mongo.db.quizattempts.find({"user_id": ObjectId(user_id)}))
+
+    @staticmethod
+    def get_attempts_for_quiz(quiz_id):
+        """Retrieve all attempts for a specific quiz"""
+        return list(mongo.db.quizattempts.find({"quiz_id": ObjectId(quiz_id)}))
+
+    @staticmethod
+    def delete_attempt(attempt_id):
+        """Delete a specific attempt by attempt_id"""
+        mongo.db.quizattempts.delete_one({"_id": ObjectId(attempt_id)})
+
+    @staticmethod
+    def update_attempt_score(attempt_id, new_score):
+        """Update the score of a specific attempt"""
+        if not isinstance(new_score, (int, float)):
+            raise BadRequest("New score must be a number.")
+        
+        mongo.db.quizattempts.update_one(
+            {"_id": ObjectId(attempt_id)},
+            {"$set": {"score": new_score}}
+        )
 
 from app import mongo

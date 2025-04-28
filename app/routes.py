@@ -1,6 +1,6 @@
 from app import app, mongo
 from app.forms import LoginForm, RegisterForm, CreateQuizForm, StandaloneQuestionForm
-from app.models import User, Sign, Quiz, Question, QuizQuestion
+from app.models import User, Sign, Quiz, Question, QuizQuestion, QuizAttempt
 from flask import redirect, url_for, flash, request, session, jsonify, current_app, render_template
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
@@ -14,20 +14,6 @@ from datetime import datetime
 @app.route("/")
 def home():
     return render_template("landing.html")  
-
-
-"""@app.route("/login", methods=["GET", "POST"])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.find_by_username(form.username.data)
-        if user and User.check_password(user["password"], form.password.data):
-            session["username"] = user["username"]
-            flash("Login successful!", "success")
-            return redirect(url_for("dashboard"))
-        else:
-            flash("Invalid username or password", "danger")
-    return render_template("login.html", form=form)"""
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -63,14 +49,6 @@ def register():
             return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
-"""@app.route("/dashboard")
-def dashboard():
-    if "username" in session:
-        return f"Welcome {session['username']}! You are logged in."
-    else:
-        flash("Please login first.", "warning")
-        return redirect(url_for("login"))
-"""
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if "user_id" not in session or session.get("role") != "admin":
@@ -119,20 +97,7 @@ def get_signs():
     signs, total = Sign.get_signs(page=page, search_query=search_query, category=category)
     return jsonify({"signs": signs, "total": total})
 
-"""
-@app.route("/edit_sign/<sign_id>", methods=["PUT"])
-def edit_sign(sign_id):
-    data = request.json  # Get data from the frontend
-    mongo.db.signs.update_one(
-        {"_id": ObjectId(sign_id)},
-        {"$set": {
-            "name": data["name"],
-            "description": data["description"]
-        }}
-    )
-    return jsonify({"message": "Sign updated successfully"})
 
-"""
 UPLOAD_FOLDER = os.path.join("app","static", "sign_images")  # relative path
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 @app.route("/update_sign/<sign_id>", methods=["PUT"])
@@ -175,46 +140,6 @@ def update_sign(sign_id):
         return jsonify({"error": str(e)}), 500
     
 
-"""
-@app.route("/update_sign/<sign_id>", methods=["PUT"])
-def update_sign(sign_id):
-    try:
-        print("Received request:", request.form, request.files)
-         # Validate ObjectId
-        if not ObjectId.is_valid(sign_id):
-            return jsonify({"error": "Invalid sign ID"}), 400
-        sign = mongo.db.signs.find_one({"_id": ObjectId(sign_id)})
-        if not sign:
-            return jsonify({"error": "Sign not found"}), 404
-
-        name = request.form.get("name", sign["name"]).strip()
-        description = request.form.get("description", sign["description"]).strip()
-
-        if not name or not description:
-            return jsonify({"error": "Missing name or description"}), 400
-        
-        
-        update_data = {"name": name, "description": description}
-
-        # Check if a new image is uploaded
-        if "image" in request.files and request.files["image"].filename :
-            image = request.files["image"]
-            image_path = f"static/uploads/{image.filename}"
-            image.save(image_path)
-            update_data["image"] = image_path  # Update image path in DB
-        else:
-            update_data["image"] = sign.get("image")  # Keep existing image
-
-        # Update sign details in MongoDB
-        mongo.db.signs.update_one({"_id": ObjectId(sign_id)}, {"$set": update_data})
-        
-        return jsonify({"message": "Sign updated successfully"}), 200
-
-    except Exception as e:
-        print("Error occurred:", str(e))
-        return jsonify({"error": str(e)}), 500
-
-"""
 @app.route("/delete_sign/<sign_id>", methods=["DELETE"])
 def delete_sign(sign_id):
     """Delete a sign entry by ID"""
@@ -361,11 +286,11 @@ def available_quizzes():
     except Exception as e:
         flash(str(e), 'danger')
         return render_template('available_quiz.html', quizzes=[], page=1, total_pages=1)
-@app.route('/start_quiz/<quiz_id>')
-def start_quiz(quiz_id):
-    quiz = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
+# @app.route('/start_quiz/<quiz_id>')
+# def start_quiz(quiz_id):
+#     quiz = mongo.db.quizzes.find_one({'_id': ObjectId(quiz_id)})
     
-    return render_template('start_quiz.html', quiz=quiz)
+#     return render_template('start_quiz.html', quiz_id=quiz)
 
 
 
@@ -489,3 +414,85 @@ def update_or_delete_quiz():
 
     return redirect(url_for('quiz_management', page=request.args.get('page', 1)))
 
+#------------------------------ Start Quiz ------------------------------#
+@app.route('/quiz/<quiz_id>/questions')
+def quiz_questions(quiz_id):
+    print("Session Data:", session)
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    try:
+        user_id = session["user_id"]
+
+        # Fetch questions linked to this quiz
+        questions = QuizQuestion.get_questions_for_quiz(quiz_id)
+
+        return render_template(
+            "quiz_questions.html",
+            questions=questions,
+            quiz_id=quiz_id,
+            user_id=user_id
+        )
+    except Exception as e:
+        flash(str(e), "danger")
+        return redirect(url_for("available_quizzes"))
+    
+@app.route('/quiz/<quiz_id>/submit', methods=['POST'])
+def submit_quiz(quiz_id):
+    # Check if user is logged in
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("You need to be logged in to submit a quiz.", "warning")
+        return redirect(url_for('login'))
+
+    questions = QuizQuestion.get_questions_for_quiz(quiz_id)
+    total_questions = len(questions)
+
+    if total_questions == 0:
+        flash("No questions found for this quiz.", "danger")
+        return redirect(url_for('home'))
+
+    user_answers = {}  # {question_id: selected_option}
+    for question in questions:
+        form_key = f'q{question["_id"]}'
+        selected_answer = request.form.get(form_key)
+        if selected_answer:
+            user_answers[str(question['_id'])] = selected_answer
+
+    # Check if all questions were answered
+    if len(user_answers) != total_questions:
+        flash("Please attempt all questions before submitting.", "warning")
+        return redirect(url_for('quiz_questions', quiz_id=quiz_id))
+
+    # Calculate score
+    score = 0
+    detailed_results = []
+    for question in questions:
+        correct = question['correct_answer']
+        user_selected = user_answers.get(str(question['_id']))
+
+        is_correct = (user_selected == correct)
+        if is_correct:
+            score += 10
+
+        detailed_results.append({
+            'question_text': question['question_text'],
+            'user_selected': user_selected,
+            'correct_answer': correct,
+            'is_correct': is_correct,
+            'options': question['options'],
+            'media_path': question.get('media_path')
+        })
+
+    # Save attempt
+    QuizAttempt.add_attempt(user_id=user_id, quiz_id=quiz_id, score=score)
+
+    # Render the same quiz page, but with result
+    return render_template('quiz_questions.html',
+                           quiz_id=quiz_id,
+                           questions=questions,
+                           result_card={
+                               'score': score,
+                               'total': total_questions * 10,
+                               'details': detailed_results
+                           })
