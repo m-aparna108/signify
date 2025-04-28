@@ -1,0 +1,110 @@
+/* static/cyberpunk.css */
+body {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #00ffff;
+    font-family: 'Orbitron', sans-serif;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #00fff7;
+    text-shadow: 0 0 5px #00fff7, 0 0 10px #00fff7;
+}
+
+a, a:hover, a:focus {
+    color: #00ffea;
+    text-decoration: none;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #00fff7;
+}
+
+.table {
+    background: rgba(255, 255, 255, 0.05);
+    color: #00e6e6;
+    border: 1px solid #00fff7;
+}
+
+.table thead {
+    background: rgba(0, 255, 255, 0.2);
+    color: #00fff7;
+}
+
+.table tbody tr:hover {
+    background: rgba(0, 255, 255, 0.1);
+}
+
+input.form-control, select.form-select {
+    background: #000000;
+    border: 1px solid #00fff7;
+    color: #00ffff;
+}
+
+input.form-control::placeholder {
+    color: #00ffffa0;
+}
+
+select.form-select {
+    color: #00ffff;
+}
+
+.btn-primary, .btn-secondary, .btn-warning, .btn-danger {
+    border: none;
+    font-weight: bold;
+    background: linear-gradient(45deg, #00fff7, #0066ff);
+    color: #0f0f0f;
+    box-shadow: 0 0 8px #00fff7;
+    transition: 0.3s;
+}
+
+.btn-primary:hover, .btn-secondary:hover, .btn-warning:hover, .btn-danger:hover {
+    background: linear-gradient(45deg, #ff00c8, #3300ff);
+    color: white;
+    box-shadow: 0 0 12px #ff00c8;
+}
+
+.alert {
+    background: rgba(0, 255, 255, 0.2);
+    border: 1px solid #00fff7;
+    color: #00fff7;
+    box-shadow: 0 0 8px #00fff7;
+}
+
+.back-btn {
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 10px;
+    color: black;
+    font-weight: bold;
+    box-shadow: 0 0 8px #ff00ff;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    color: white;
+}
+
+/* Flash message container */
+.flash-container {
+    margin-bottom: 20px;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f0c29;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00fff7;
+    border-radius: 10px;
+}

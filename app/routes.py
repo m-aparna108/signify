@@ -443,3 +443,164 @@ def update_or_delete_quiz():
         flash(str(e), 'danger')
 
     return redirect(url_for('quiz_management', page=request.args.get('page', 1)))
+
+
+#-------------------------questions update ----------------------
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
+from bson import ObjectId
+import os
+
+ # Make sure you have this!
+
+# MongoDB setup
+from app import mongo
+
+# Collections
+questions_collection = mongo.db.questions
+quizzes_collection = mongo.db.quizzes
+quizquestions_collection = mongo.db.quizquestions
+
+# Upload folder
+UPLOAD_FOLDER = 'app/static/uploads'  # adjust if needed
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ------------------------- ROUTES ----------------------------
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from werkzeug.utils import secure_filename
+import os
+from math import ceil
+from bson import ObjectId
+
+@app.route('/admin/manage_questions', methods=['GET', 'POST'])
+def manage_questions():
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = 10
+
+        # Filters
+        quiz_title = request.args.get('quiz_title', '')
+        difficulty = request.args.get('difficulty', '')
+        search = request.args.get('search', '').strip()
+
+        # Query
+        query = {}
+        if search:
+            query['question_text'] = {'$regex': search, '$options': 'i'}
+        if difficulty:
+            query['difficulty'] = difficulty
+        if quiz_title:
+            # Filter by quiz: Find all question_ids for this quiz first
+            quiz = mongo.db.quizzes.find_one({'title': quiz_title})
+            if quiz:
+                quiz_question_ids = mongo.db.quizquestions.find({'quiz_id': quiz['_id']}).distinct('question_id')
+                query['_id'] = {'$in': quiz_question_ids}
+            else:
+                query['_id'] = {'$in': []}  # No questions if quiz not found
+
+        total_questions = mongo.db.questions.count_documents(query)
+        questions_cursor = mongo.db.questions.find(query).skip((page - 1) * per_page).limit(per_page)
+        questions = list(questions_cursor)
+
+        # Get all quizzes for dropdown
+        quizzes = list(mongo.db.quizzes.find())
+        quiz_titles = [quiz['title'] for quiz in quizzes]
+
+        total_pages = ceil(total_questions / per_page)
+
+        return render_template('manage_questions.html', 
+                               questions=questions, 
+                               quiz_titles=quiz_titles, 
+                               page=page, 
+                               total_pages=total_pages)
+
+    except Exception as e:
+        flash(str(e), 'danger')
+        return render_template('manage_questions.html', questions=[], quiz_titles=[], page=1, total_pages=1)
+
+
+@app.route('/admin/update_or_delete_question', methods=['POST'])
+def update_or_delete_question():
+    try:
+        if 'update' in request.form:
+            question_id = request.form['update']
+            question = mongo.db.questions.find_one({'_id': ObjectId(question_id)})
+            if not question:
+                flash('Question not found!', 'danger')
+                return redirect(url_for('manage_questions'))
+
+            # Get updated fields
+            question_text = request.form.get(f'question_text_{question_id}')
+            option1 = request.form.get(f'option1_{question_id}')
+            option2 = request.form.get(f'option2_{question_id}')
+            option3 = request.form.get(f'option3_{question_id}')
+            option4 = request.form.get(f'option4_{question_id}')
+            correct_answer = request.form.get(f'correct_answer_{question_id}')
+            quiz_title = request.form.get(f'quiz_title_{question_id}')
+            difficulty = request.form.get(f'difficulty_{question_id}')
+
+            # Handle optional image update
+            image_file = request.files.get(f'question_image_{question_id}')
+            media_path = question.get('media_path')
+            if image_file and image_file.filename:
+                upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+
+                filename = secure_filename(image_file.filename)
+                save_path = os.path.join(upload_folder, filename)
+                image_file.save(save_path)
+                media_path = f'/static/uploads/{filename}'
+
+            # Update in questions table
+            mongo.db.questions.update_one(
+                {'_id': ObjectId(question_id)},
+                {'$set': {
+                    'question_text': question_text,
+                    'options': [
+                        {'option_text': option1},
+                        {'option_text': option2},
+                        {'option_text': option3},
+                        {'option_text': option4}
+                    ],
+                    'correct_answer': correct_answer,
+                    'media_path': media_path,
+                    'difficulty': difficulty
+                }}
+            )
+
+            # Update in quizquestions if needed
+            if quiz_title:
+                quiz = mongo.db.quizzes.find_one({'title': quiz_title})
+                if quiz:
+                    # Check if mapping exists already
+                    mapping = mongo.db.quizquestions.find_one({'question_id': ObjectId(question_id)})
+                    if mapping:
+                        mongo.db.quizquestions.update_one(
+                            {'question_id': ObjectId(question_id)},
+                            {'$set': {'quiz_id': quiz['_id']}}
+                        )
+                    else:
+                        mongo.db.quizquestions.insert_one({
+                            'quiz_id': quiz['_id'],
+                            'question_id': ObjectId(question_id)
+                        })
+
+            flash('Question updated successfully!', 'success')
+
+        elif 'delete' in request.form:
+            question_id = request.form['delete']
+
+            # Delete from questions table
+            mongo.db.questions.delete_one({'_id': ObjectId(question_id)})
+
+            # Also delete mapping in quizquestions table
+            mongo.db.quizquestions.delete_many({'question_id': ObjectId(question_id)})
+
+            flash('Question deleted successfully!', 'success')
+
+    except Exception as e:
+        flash(str(e), 'danger')
+
+    return redirect(url_for('manage_questions', page=request.args.get('page', 1)))

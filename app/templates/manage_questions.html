@@ -1,0 +1,127 @@
+<!-- templates/manage_questions.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Questions</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/manage_questions.css') }}" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="container mt-5">
+
+  <a href="{{ url_for('quiz_admin_dashboard') }}" class="btn btn-secondary mb-3">Back</a>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <h2>Manage Questions</h2>
+
+  <!-- Filters -->
+  <form method="get" action="{{ url_for('manage_questions') }}" class="row g-3 mb-4">
+    <div class="col-md-4">
+      <input type="text" name="search" class="form-control" placeholder="Search Question Text" value="{{ request.args.get('search', '') }}">
+    </div>
+    <div class="col-md-3">
+      <select name="quiz_title" class="form-select">
+        <option value="">All Quizzes</option>
+        {% for title in quiz_titles %}
+          <option value="{{ title }}" {% if request.args.get('quiz_title') == title %}selected{% endif %}>{{ title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select name="difficulty" class="form-select">
+        <option value="">All Difficulties</option>
+        <option value="Easy" {% if request.args.get('difficulty') == 'Easy' %}selected{% endif %}>Easy</option>
+        <option value="Medium" {% if request.args.get('difficulty') == 'Medium' %}selected{% endif %}>Medium</option>
+        <option value="Hard" {% if request.args.get('difficulty') == 'Hard' %}selected{% endif %}>Hard</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Apply</button>
+    </div>
+  </form>
+
+  <!-- Questions Table -->
+  <form method="POST" action="{{ url_for('update_or_delete_question') }}" enctype="multipart/form-data">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Question Text</th>
+          <th>Image</th>
+          <th>Option 1</th>
+          <th>Option 2</th>
+          <th>Option 3</th>
+          <th>Option 4</th>
+          <th>Correct Answer</th>
+          <th>Quiz Title</th>
+          <th>Difficulty</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in questions %}
+          <tr>
+            <td><input type="text" name="question_text_{{ q._id }}" class="form-control" value="{{ q.question_text }}"></td>
+            <td>
+              {% if q.media_path %}
+                <img src="{{ q.media_path }}" alt="Question Image" style="width: 100px; height: auto;">
+              {% endif %}
+              <input type="file" name="question_image_{{ q._id }}" class="form-control mt-1">
+            </td>
+            <td><input type="text" name="option1_{{ q._id }}" class="form-control" value="{{ q.options[0].option_text }}"></td>
+            <td><input type="text" name="option2_{{ q._id }}" class="form-control" value="{{ q.options[1].option_text }}"></td>
+            <td><input type="text" name="option3_{{ q._id }}" class="form-control" value="{{ q.options[2].option_text }}"></td>
+            <td><input type="text" name="option4_{{ q._id }}" class="form-control" value="{{ q.options[3].option_text }}"></td>
+            <td><input type="text" name="correct_answer_{{ q._id }}" class="form-control" value="{{ q.correct_answer }}"></td>
+            <td>
+              <select name="quiz_title_{{ q._id }}" class="form-select">
+                <option value="">Unassigned</option>
+                {% for title in quiz_titles %}
+                  <option value="{{ title }}">{{ title }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <select name="difficulty_{{ q._id }}" class="form-select">
+                <option value="Easy" {% if q.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                <option value="Medium" {% if q.difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="Hard" {% if q.difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+              </select>
+            </td>
+            <td>
+              <button name="update" value="{{ q._id }}" class="btn btn-warning btn-sm">Update</button>
+              <button name="delete" value="{{ q._id }}" class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-between mt-3">
+    {% if page > 1 %}
+      <a href="{{ url_for('manage_questions', page=page-1) }}" class="btn btn-primary">Previous</a>
+    {% endif %}
+    {% if page < total_pages %}
+      <a href="{{ url_for('manage_questions', page=page+1) }}" class="btn btn-primary">Next</a>
+    {% endif %}
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
