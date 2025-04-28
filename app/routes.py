@@ -418,8 +418,7 @@ def add_standalone_question():
                 if quiz:
                     QuizQuestion.add_quiz_question(
                         quiz_id=quiz["_id"],
-                        question_id=question_id,
-                        user=None
+                        question_id=question_id
                     )
 
             flash("Question created successfully!", "success")

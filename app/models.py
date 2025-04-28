@@ -276,7 +276,7 @@ class QuizQuestion:
     """Model for managing quiz-question mappings"""
 
     @staticmethod
-    def add_quiz_question(quiz_id, question_id, user):
+    def add_quiz_question(quiz_id, question_id):
         """Map a question to a quiz (admin only)"""
         
 
